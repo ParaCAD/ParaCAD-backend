@@ -1,6 +1,6 @@
 # ParaCAD backend 
 
-[![Tests](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml/badge.svg)](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml)
+[![Tests](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml/badge.svg)](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml?branch=master)
 
 TODO: logo goes here
 
