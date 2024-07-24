@@ -1,0 +1,28 @@
+name: ParaCAD backend workflow
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  staticcheck:
+    name: Run staticcheck
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: dominikh/staticcheck-action@v1.3.1
+      with:
+        version: "latest"
+  build:
+    runs-on: ubuntu-latest
+    container: golang:1.22.5-alpine3.20
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: go get .
+      - name: Build
+        run: go build -v ./...
