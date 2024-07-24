@@ -1,0 +1,24 @@
+name: Staticcheck
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  staticcheck:
+    name: Staticcheck
+    runs-on: ubuntu-latest
+    container: golang:1.22.5-alpine3.20
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - name: Go vet
+      run: go vet ./...
+    - name: Run staticcheck
+      uses: dominikh/staticcheck-action@v1.3.1
+      with:
+        version: latest
+        install-go: false
+
