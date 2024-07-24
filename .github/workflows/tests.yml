@@ -1,4 +1,4 @@
-name: ParaCAD backend workflow
+name: Tests
 on:
   pull_request:
   push:
