@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func (a *Api) addRoutes() *Api {
+func (a *API) addRoutes() *API {
 	// TODO: add logging middleware
 	// TODO: add auth middleware
 	a.router.Handle(http.MethodGet, "/", a.controller.HandleRoot)

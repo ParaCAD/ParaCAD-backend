@@ -2,7 +2,7 @@ package api
 
 import "net/http"
 
-func (a *Api) Serve() error {
+func (a *API) Serve() error {
 	a.addRoutes()
 	return http.ListenAndServe(":"+a.port, a.router)
 }
