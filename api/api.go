@@ -5,14 +5,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Api struct {
+type API struct {
 	port       string
 	router     *httprouter.Router
 	controller *controller.Controller
 }
 
-func New(controller *controller.Controller, port string) *Api {
-	return &Api{
+func New(controller *controller.Controller, port string) *API {
+	return &API{
 		port:       port,
 		router:     httprouter.New(),
 		controller: controller,
