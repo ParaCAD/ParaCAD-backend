@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +13,7 @@ import (
 const tempDirName string = "temp"
 const openScadLibrariesIncludes string = ``
 
-func Generate(template FilledTemplate, format ModelFileFormat) ([]byte, error) {
+func Generate(template FilledTemplate) ([]byte, error) {
 	if runtime.GOOS != "linux" {
 		return nil, fmt.Errorf("runtime.GOOS != linux")
 	}
@@ -56,23 +55,32 @@ func Generate(template FilledTemplate, format ModelFileFormat) ([]byte, error) {
 	// Write template code
 	scadFile.Write(template.Template)
 
+	// Close file
+	err = scadFile.Close()
+	if err != nil {
+		return nil, fmt.Errorf("scadFile.Close(): %s", err.Error())
+	}
+
+	outputFileName := template.UUID.String() + "_" + tempID + ".stl"
+	outputFilePath := path.Join(programDir, tempDirName, outputFileName)
+
 	// Generate model
 	cmdArgs := []string{}
-	cmdArgs = append(cmdArgs, "--export-format="+string(format))
-	cmdArgs = append(cmdArgs, "-o-")
+	cmdArgs = append(cmdArgs, "--export-format=binstl")
+	cmdArgs = append(cmdArgs, "-o"+outputFilePath)
 	cmdArgs = append(cmdArgs, scadFilePath)
 
 	cmd := exec.Command("openscad", cmdArgs...)
-	fmt.Println(cmd.String())
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err = cmd.Run()
+	output, err := cmd.CombinedOutput()
+	defer os.Remove(outputFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("cmd.Run(): %s", stderr.String())
+		return nil, fmt.Errorf("cmd.Run(): %s", string(output))
 	}
 
-	model := stdout.Bytes()
+	model, err := os.ReadFile(outputFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("os.ReadFile(outputFilePath): %s", err.Error())
+	}
 
 	return model, nil
 }
