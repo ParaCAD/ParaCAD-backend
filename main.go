@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/ParaCAD/ParaCAD-backend/api"
@@ -10,11 +11,14 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/database/dummydb"
 	"github.com/ParaCAD/ParaCAD-backend/generator"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
+	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 	"github.com/google/uuid"
 )
 
 func main() {
 	cfg := utils.MustLoadConfig()
+
+	logging.Init(slog.LevelDebug)
 
 	// TODO: a real create database driver
 	db := dummydb.New()
