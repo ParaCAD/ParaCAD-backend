@@ -123,3 +123,7 @@ func (p BoolParameter) GetDisplayName() string {
 func (p BoolParameter) GetValue() interface{} {
 	return p.DefaultValue
 }
+
+func (p BoolParameter) String() string {
+	return strconv.FormatBool(p.DefaultValue)
+}
