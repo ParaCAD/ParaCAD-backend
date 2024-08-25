@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var dummyUserID database.UserID = database.UserID(uuid.Nil)
+var dummyUserID uuid.UUID = uuid.Nil
 var dummyUsername string = "Dummy User"
 var dummyEmail string = "test@test.com"
 var dummyPassword string = "password"
@@ -25,7 +25,7 @@ func (db *DummyDB) getDummyUser() database.User {
 	}
 }
 
-func (db *DummyDB) GetUserByUUID(userID database.UserID) (database.User, error) {
+func (db *DummyDB) GetUserByUUID(userID uuid.UUID) (database.User, error) {
 	if userID == dummyUserID {
 		return db.getDummyUser(), nil
 	}

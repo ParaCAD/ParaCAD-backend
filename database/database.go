@@ -1,10 +1,12 @@
 package database
 
+import "github.com/google/uuid"
+
 type Database interface {
-	GetUserByUUID(UserID) (User, error)
+	GetUserByUUID(uuid.UUID) (User, error)
 	GetUserByUsername(string) (User, error)
 	GetUserByEmail(string) (User, error)
 
-	GetTemplateByUUID(TemplateID) (Template, error)
+	GetTemplateByUUID(uuid.UUID) (Template, error)
 	SearchTemplates(SearchParameters) ([]Template, error)
 }

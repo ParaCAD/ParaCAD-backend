@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var dummyTemplateID database.TemplateID = database.TemplateID(uuid.Nil)
+var dummyTemplateID uuid.UUID = uuid.Nil
 var dummyTemplateTemplate string = `
 cube([10,width,10],false);
 `
@@ -32,7 +32,7 @@ func (db *DummyDB) getDummyTemplate() database.Template {
 	}
 }
 
-func (db *DummyDB) GetTemplateByUUID(templateID database.TemplateID) (database.Template, error) {
+func (db *DummyDB) GetTemplateByUUID(templateID uuid.UUID) (database.Template, error) {
 	if templateID == dummyTemplateID {
 		return db.getDummyTemplate(), nil
 	}

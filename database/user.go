@@ -3,15 +3,13 @@ package database
 import "github.com/google/uuid"
 
 type User struct {
-	UUID     UserID
+	UUID     uuid.UUID
 	Username string
 	Password string
 	Email    string
 	Role     role
 	Deleted  bool
 }
-
-type UserID uuid.UUID
 
 type role string
 
