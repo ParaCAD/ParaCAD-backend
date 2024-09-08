@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ParaCAD/ParaCAD-backend/database"
+	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
@@ -85,14 +85,14 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 	}
 }
 
-func parameterToResponseParameter(parameter database.Parameter) GetTemplateResponseParameter {
+func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateResponseParameter {
 	responseParameter := GetTemplateResponseParameter{
 		ParameterDisplayName: parameter.GetDisplayName(),
 		ParameterName:        parameter.GetName(),
 	}
 	switch parameter.GetType() {
-	case database.ParameterTypeString:
-		p := parameter.(database.StringParameter)
+	case dbparameter.ParameterTypeString:
+		p := parameter.(dbparameter.StringParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
 		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
 			{
@@ -104,8 +104,8 @@ func parameterToResponseParameter(parameter database.Parameter) GetTemplateRespo
 				Value: p.MaxLength,
 			},
 		}
-	case database.ParameterTypeInt:
-		p := parameter.(database.IntParameter)
+	case dbparameter.ParameterTypeInt:
+		p := parameter.(dbparameter.IntParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
 		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
 			{
@@ -118,8 +118,8 @@ func parameterToResponseParameter(parameter database.Parameter) GetTemplateRespo
 			},
 		}
 
-	case database.ParameterTypeFloat:
-		p := parameter.(database.FloatParameter)
+	case dbparameter.ParameterTypeFloat:
+		p := parameter.(dbparameter.FloatParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
 		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
 			{
@@ -135,8 +135,8 @@ func parameterToResponseParameter(parameter database.Parameter) GetTemplateRespo
 				Value: p.Step,
 			},
 		}
-	case database.ParameterTypeBool:
-		p := parameter.(database.BoolParameter)
+	case dbparameter.ParameterTypeBool:
+		p := parameter.(dbparameter.BoolParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
 	}
 	return responseParameter

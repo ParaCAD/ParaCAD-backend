@@ -1,6 +1,9 @@
 package database
 
-import "github.com/google/uuid"
+import (
+	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
+	"github.com/google/uuid"
+)
 
 type Template struct {
 	UUID        uuid.UUID
@@ -9,5 +12,5 @@ type Template struct {
 	Description string
 	Preview     []byte
 	Template    string
-	Parameters  []Parameter
+	Parameters  []dbparameter.Parameter
 }
