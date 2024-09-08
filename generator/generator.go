@@ -10,7 +10,7 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 )
 
-const tempDirName string = "temp"
+const tempDirName string = "/dev/shm/ParaCAD"
 const openScadLibrariesIncludes string = ``
 
 func Generate(template FilledTemplate) ([]byte, error) {
@@ -18,13 +18,13 @@ func Generate(template FilledTemplate) ([]byte, error) {
 		return nil, fmt.Errorf("runtime.GOOS != linux")
 	}
 
-	programDir, err := os.Getwd()
-	if err != nil {
-		return nil, fmt.Errorf("os.Getwd(): %s", err.Error())
-	}
+	//programDir, err := os.Getwd()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("os.Getwd(): %s", err.Error())
+	// }
 
 	// Ensure temp dir exists
-	err = os.MkdirAll(tempDirName, 0700)
+	err := os.MkdirAll(tempDirName, 0700)
 	if err != nil {
 		return nil, fmt.Errorf("os.MkdirAll(tempDirName, 0700): %s", err.Error())
 	}
@@ -32,7 +32,7 @@ func Generate(template FilledTemplate) ([]byte, error) {
 	// Create temporary .scad file
 	tempID := utils.CreateRandomString(6)
 	scadFileName := template.UUID.String() + "_" + tempID + ".scad"
-	scadFilePath := path.Join(programDir, tempDirName, scadFileName)
+	scadFilePath := path.Join(tempDirName, scadFileName)
 	scadFile, err := os.Create(scadFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("os.Create(scadFilePath): %s", err.Error())
@@ -62,7 +62,7 @@ func Generate(template FilledTemplate) ([]byte, error) {
 	}
 
 	outputFileName := template.UUID.String() + "_" + tempID + ".stl"
-	outputFilePath := path.Join(programDir, tempDirName, outputFileName)
+	outputFilePath := path.Join(tempDirName, outputFileName)
 
 	// Generate model
 	cmdArgs := []string{}
