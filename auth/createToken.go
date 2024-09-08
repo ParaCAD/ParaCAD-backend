@@ -2,10 +2,10 @@ package auth
 
 import "github.com/golang-jwt/jwt"
 
-func (a *Auth) CreateToken(username string, role AuthRole) (string, error) {
+func (a *Auth) CreateToken(userID string, role AuthRole) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
 		claimISS:  "ParaCAD",
-		claimSUB:  username,
+		claimSUB:  userID,
 		claimAUD:  "ParaCAD",
 		claimEXP:  jwt.TimeFunc().Add(a.Duration).Unix(),
 		claimIAT:  jwt.TimeFunc().Unix(),

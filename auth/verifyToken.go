@@ -21,7 +21,7 @@ func (a *Auth) VerifyToken(tokenString string) (string, AuthRole, error) {
 		return "", "", errors.New("no claims in token")
 	}
 
-	username, ok := claims[claimSUB].(string)
+	userID, ok := claims[claimSUB].(string)
 	if !ok {
 		return "", "", errors.New("no username in token")
 	}
@@ -31,5 +31,5 @@ func (a *Auth) VerifyToken(tokenString string) (string, AuthRole, error) {
 		return "", "", errors.New("no role in token")
 	}
 
-	return username, role, nil
+	return userID, role, nil
 }
