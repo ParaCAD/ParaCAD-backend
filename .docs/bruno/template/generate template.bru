@@ -1,0 +1,19 @@
+meta {
+  name: generate template
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8081/template/:UUID/model
+  body: json
+  auth: none
+}
+
+params:path {
+  UUID: {{nil-uuid}}
+}
+
+body:json {
+  {}
+}

@@ -1,0 +1,23 @@
+meta {
+  name: delete user
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8081/user/:UUID
+  body: none
+  auth: none
+}
+
+params:path {
+  UUID: {{nil-uuid}}
+}
+
+headers {
+  Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJQYXJhQ0FEIiwiZXhwIjoyMzU2NjE4NDI1LCJpYXQiOjE3MjU4OTg0MjUsImlzcyI6IlBhcmFDQUQiLCJyb2xlIjoidXNlciIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCJ9.Gr1MxCR00YHcpGr8O7taHFqoMGPkTv1FrY870hKsYuU
+}
+
+body:json {
+  {}
+}
