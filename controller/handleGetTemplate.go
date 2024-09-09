@@ -44,7 +44,7 @@ const (
 )
 
 func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	templateUUID, err := uuid.Parse(p.ByName("uuid"))
+	templateUUID, err := uuid.Parse(p.ByName("UUID"))
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusBadRequest, err)
 		return

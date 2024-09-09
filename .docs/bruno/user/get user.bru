@@ -1,0 +1,15 @@
+meta {
+  name: get user
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8081/user/:UUID
+  body: none
+  auth: none
+}
+
+params:path {
+  UUID: {{nil-uuid}}
+}

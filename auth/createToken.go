@@ -3,7 +3,7 @@ package auth
 import "github.com/golang-jwt/jwt"
 
 func (a *Auth) CreateToken(userID string, role AuthRole) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		claimISS:  "ParaCAD",
 		claimSUB:  userID,
 		claimAUD:  "ParaCAD",

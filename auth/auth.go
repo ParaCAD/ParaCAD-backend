@@ -7,14 +7,7 @@ type Auth struct {
 	Duration  time.Duration
 }
 
-type AuthRole string
-
-const (
-	RoleUser  AuthRole = "user"
-	RoleAdmin AuthRole = "admin"
-)
-
-func Init(secret string, durationMinutes int) *Auth {
+func New(secret string, durationMinutes int) *Auth {
 	return &Auth{
 		JWTSecret: []byte(secret),
 		Duration:  time.Duration(durationMinutes) * time.Minute,
