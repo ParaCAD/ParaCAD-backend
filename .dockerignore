@@ -1,0 +1,9 @@
+.docs
+.github
+.vscode
+temp
+
+README.md
+staticcheck
+.gitignore
+__debug_bin*
