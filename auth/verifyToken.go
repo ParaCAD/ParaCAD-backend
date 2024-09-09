@@ -26,10 +26,15 @@ func (a *Auth) VerifyToken(tokenString string) (string, AuthRole, error) {
 		return "", "", errors.New("no username in token")
 	}
 
-	role, ok := claims[claimROLE].(AuthRole)
+	role, ok := claims[claimROLE].(string)
 	if !ok {
 		return "", "", errors.New("no role in token")
 	}
 
-	return userID, role, nil
+	authRole, err := GetRole(role)
+	if err != nil {
+		return "", "", err
+	}
+
+	return userID, authRole, nil
 }

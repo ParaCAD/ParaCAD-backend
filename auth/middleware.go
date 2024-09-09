@@ -33,6 +33,8 @@ func (a *Auth) Middleware(h httprouter.Handle) httprouter.Handle {
 		ctx = context.WithValue(ctx, UserIDKey, userID)
 		ctx = context.WithValue(ctx, RoleKey, role)
 		*r = *r.WithContext(ctx)
+
+		h(w, r, p)
 	}
 }
 
