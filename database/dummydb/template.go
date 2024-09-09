@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ParaCAD/ParaCAD-backend/database"
+	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
 	"github.com/google/uuid"
 )
 
@@ -20,8 +21,8 @@ func (db *DummyDB) getDummyTemplate() database.Template {
 		Description: "Simple cube for testing",
 		Preview:     nil,
 		Template:    dummyTemplateTemplate,
-		Parameters: []database.Parameter{
-			database.IntParameter{
+		Parameters: []dbparameter.Parameter{
+			dbparameter.IntParameter{
 				Name:         "width",
 				DisplayName:  "Width of the cube",
 				DefaultValue: 20,
