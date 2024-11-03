@@ -50,15 +50,9 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-	template, err := c.db.GetTemplateByUUID(templateUUID)
+	template, err := c.db.GetTemplateWithOwnerByUUID(templateUUID)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusNotFound, err)
-		return
-	}
-
-	owner, err := c.db.GetUserByUUID(template.OwnerUUID)
-	if err != nil {
-		utils.HandleErr(r, w, http.StatusConflict, err)
 		return
 	}
 
@@ -69,15 +63,14 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplatePreview:     template.Preview,
 		Parameters:          []GetTemplateResponseParameter{},
 
-		OwnerUUID: owner.UUID,
-		OwnerName: owner.Username,
+		OwnerUUID: template.OwnerUUID,
+		OwnerName: template.OwnerName,
 	}
 
 	for _, parameter := range template.Parameters {
 		response.Parameters = append(response.Parameters, parameterToResponseParameter(parameter))
 	}
 
-	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusInternalServerError, err)

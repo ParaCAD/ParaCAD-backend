@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/database"
 )
 
 type Controller struct {
-	db database.Database
+	auth *auth.Auth
+	db   database.Database
 }
 
-func New(db database.Database) *Controller {
+func New(auth *auth.Auth, db database.Database) *Controller {
 	return &Controller{
-		db: db,
+		auth: auth,
+		db:   db,
 	}
 }
 
