@@ -40,6 +40,23 @@ func (db *DummyDB) GetTemplateByUUID(templateID uuid.UUID) (database.Template, e
 	return database.Template{}, fmt.Errorf("template %v not found", templateID)
 }
 
+func (db *DummyDB) GetTemplateWithOwnerByUUID(templateID uuid.UUID) (database.TemplateWithOwner, error) {
+	if templateID == dummyTemplateID {
+		return database.TemplateWithOwner{
+			Template:  db.getDummyTemplate(),
+			OwnerName: db.getDummyUser().Username,
+		}, nil
+	}
+	return database.TemplateWithOwner{}, fmt.Errorf("template %v not found", templateID)
+}
+
 func (db *DummyDB) SearchTemplates(searchParameters database.SearchParameters) ([]database.Template, error) {
 	return []database.Template{db.getDummyTemplate()}, nil
+}
+
+func (db *DummyDB) SetTemplateMarked(templateID uuid.UUID, marked bool) error {
+	if templateID == dummyTemplateID {
+		return nil
+	}
+	return fmt.Errorf("template %v not found", templateID)
 }

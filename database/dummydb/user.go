@@ -2,6 +2,7 @@ package dummydb
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/google/uuid"
@@ -14,11 +15,9 @@ var dummyEmail string = "test@test.com"
 var dummyPassword string = "password"
 
 func (db *DummyDB) getDummyUser() database.User {
-	password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
 	return database.User{
 		UUID:     dummyUserID,
 		Username: dummyUsername,
-		Password: string(password),
 		Email:    dummyEmail,
 		Role:     database.RoleUser,
 		Deleted:  false,
@@ -44,4 +43,41 @@ func (db *DummyDB) GetUserByEmail(email string) (database.User, error) {
 		return db.getDummyUser(), nil
 	}
 	return database.User{}, fmt.Errorf("user %v not found", email)
+}
+
+func (db *DummyDB) GetUserSecurityByUsername(username string) (database.UserSecurity, error) {
+	if username == dummyEmail {
+		u := db.getDummyUser()
+		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
+		return database.UserSecurity{
+			Username: u.Username,
+			Email:    u.Email,
+			Password: password,
+			Role:     u.Role,
+			Deleted:  u.Deleted,
+		}, nil
+	}
+	return database.UserSecurity{}, fmt.Errorf("user %v not found", username)
+}
+
+func (db *DummyDB) GetUserSecurityByEmail(email string) (database.UserSecurity, error) {
+	if email == dummyEmail {
+		u := db.getDummyUser()
+		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
+		return database.UserSecurity{
+			Username: u.Username,
+			Email:    u.Email,
+			Password: password,
+			Role:     u.Role,
+			Deleted:  u.Deleted,
+		}, nil
+	}
+	return database.UserSecurity{}, fmt.Errorf("user %v not found", email)
+}
+
+func (db *DummyDB) SetUserLastLogin(userID uuid.UUID, lastLoginTime time.Time) error {
+	if userID == dummyUserID {
+		return nil
+	}
+	return fmt.Errorf("user %v not found", userID)
 }

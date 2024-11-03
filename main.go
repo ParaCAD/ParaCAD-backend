@@ -22,7 +22,7 @@ func main() {
 	// TODO: a real create database driver
 	db := dummydb.New()
 
-	con := controller.New(db)
+	con := controller.New(auth, db)
 
 	api := api.New(cfg.Port, auth, con)
 	err := api.Serve()

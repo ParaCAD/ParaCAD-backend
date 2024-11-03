@@ -14,3 +14,8 @@ type Template struct {
 	Template    string
 	Parameters  []dbparameter.Parameter
 }
+
+type TemplateWithOwner struct {
+	Template
+	OwnerName string
+}

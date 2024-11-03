@@ -1,11 +1,14 @@
 package database
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	UUID     uuid.UUID
 	Username string
-	Password string
 	Email    string
 	Role     role
 	Deleted  bool
@@ -24,4 +27,15 @@ type Role interface {
 
 func (r role) Role() role {
 	return r
+}
+
+type UserSecurity struct {
+	UUID      uuid.UUID
+	Username  string
+	Email     string
+	Password  []byte
+	Role      role
+	Deleted   bool
+	Created   time.Time
+	LastLogin time.Time
 }
