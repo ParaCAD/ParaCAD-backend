@@ -14,3 +14,11 @@ func HandleErr(r *http.Request, w http.ResponseWriter, status int, err error) {
 	w.Write([]byte(err.Error()))
 	logging.AddErrorToRequestCtx(r, err, status)
 }
+
+func SendFile(w http.ResponseWriter, file []byte, fileName string) {
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
+	w.Header().Set("Content-Transfer-Encoding", "binary")
+	w.Header().Set("Expires", "0")
+	w.Write(file)
+}

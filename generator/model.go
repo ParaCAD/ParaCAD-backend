@@ -9,7 +9,6 @@ type FilledTemplate struct {
 }
 
 type Parameter struct {
-	Name  string
 	Key   string
 	Value string
 }
