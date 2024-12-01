@@ -7,6 +7,7 @@ type Parameter interface {
 	GetName() string
 	GetDisplayName() string
 	String() string
+	VerifyValue(string) error
 }
 
 type parameterType string

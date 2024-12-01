@@ -27,3 +27,8 @@ func (p BoolParameter) GetValue() interface{} {
 func (p BoolParameter) String() string {
 	return strconv.FormatBool(p.DefaultValue)
 }
+
+func (p BoolParameter) VerifyValue(value string) error {
+	_, err := strconv.ParseBool(value)
+	return err
+}

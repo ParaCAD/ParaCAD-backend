@@ -1,5 +1,7 @@
 package dbparameter
 
+import "fmt"
+
 type StringParameter struct {
 	Name         string
 	DisplayName  string
@@ -22,4 +24,11 @@ func (p StringParameter) GetDisplayName() string {
 
 func (p StringParameter) String() string {
 	return p.DefaultValue
+}
+
+func (p StringParameter) VerifyValue(value string) error {
+	if len(value) < p.MinLength || len(value) > p.MaxLength {
+		return fmt.Errorf("length of %s: %s (%d) out of range (%d, %d)", p.Name, value, len(value), p.MinLength, p.MaxLength)
+	}
+	return nil
 }
