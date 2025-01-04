@@ -40,14 +40,34 @@ func (db *DummyDB) GetTemplateByUUID(templateID uuid.UUID) (database.Template, e
 	return database.Template{}, fmt.Errorf("template %v not found", templateID)
 }
 
-func (db *DummyDB) GetTemplateWithOwnerByUUID(templateID uuid.UUID) (database.TemplateWithOwner, error) {
+func (db *DummyDB) GetTemplateWithOwnerByUUID(templateID uuid.UUID) (database.PageTemplate, error) {
 	if templateID == dummyTemplateID {
-		return database.TemplateWithOwner{
-			Template:  db.getDummyTemplate(),
+		template := db.getDummyTemplate()
+		return database.PageTemplate{
+			UUID:        template.UUID,
+			Name:        template.Name,
+			Description: template.Description,
+			PreviewURL:  "",
+			Parameters:  template.Parameters,
+
+			OwnerUUID: template.OwnerUUID,
 			OwnerName: db.getDummyUser().Username,
 		}, nil
 	}
-	return database.TemplateWithOwner{}, fmt.Errorf("template %v not found", templateID)
+	return database.PageTemplate{}, fmt.Errorf("template %v not found", templateID)
+}
+
+func (db *DummyDB) GetTemplateContentByUUID(templateID uuid.UUID) (database.ContentTemplate, error) {
+	if templateID == dummyTemplateID {
+		template := db.getDummyTemplate()
+		return database.ContentTemplate{
+			UUID:       template.UUID,
+			Name:       template.Name,
+			Template:   template.Template,
+			Parameters: template.Parameters,
+		}, nil
+	}
+	return database.ContentTemplate{}, fmt.Errorf("template %v not found", templateID)
 }
 
 func (db *DummyDB) SearchTemplates(searchParameters database.SearchParameters) ([]database.Template, error) {

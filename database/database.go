@@ -15,7 +15,9 @@ type Database interface {
 	SetUserLastLogin(uuid.UUID, time.Time) error
 
 	GetTemplateByUUID(uuid.UUID) (Template, error)
-	GetTemplateWithOwnerByUUID(uuid.UUID) (TemplateWithOwner, error)
+	GetTemplateWithOwnerByUUID(uuid.UUID) (PageTemplate, error)
+	GetTemplateContentByUUID(uuid.UUID) (ContentTemplate, error)
+
 	SearchTemplates(SearchParameters) ([]Template, error)
 
 	SetTemplateMarked(uuid.UUID, bool) error

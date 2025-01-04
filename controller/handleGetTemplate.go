@@ -14,7 +14,7 @@ type GetTemplateResponse struct {
 	TemplateUUID        uuid.UUID                      `json:"template_uuid"`
 	TemplateName        string                         `json:"template_name"`
 	TemplateDescription string                         `json:"template_description"`
-	TemplatePreview     []byte                         `json:"template_preview"`
+	TemplatePreview     string                         `json:"template_preview"`
 	Parameters          []GetTemplateResponseParameter `json:"template_parameters"`
 
 	OwnerUUID uuid.UUID `json:"owner_uuid"`
@@ -60,7 +60,7 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplateUUID:        template.UUID,
 		TemplateName:        template.Name,
 		TemplateDescription: template.Description,
-		TemplatePreview:     template.Preview,
+		TemplatePreview:     template.PreviewURL,
 		Parameters:          []GetTemplateResponseParameter{},
 
 		OwnerUUID: template.OwnerUUID,
