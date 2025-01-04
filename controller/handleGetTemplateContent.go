@@ -21,7 +21,11 @@ func (c *Controller) HandleGetTemplateContent(w http.ResponseWriter, r *http.Req
 
 	templateContent, err := c.db.GetTemplateContentByUUID(templateUUID)
 	if err != nil {
-		utils.HandleErr(r, w, http.StatusNotFound, err)
+		utils.HandleErr(r, w, http.StatusFailedDependency, err)
+		return
+	}
+	if templateContent == nil {
+		utils.HandleErr(r, w, http.StatusNotFound, nil)
 		return
 	}
 

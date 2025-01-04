@@ -7,7 +7,7 @@ import (
 
 // Database offers templates with different amount of fields, depending on the use case
 
-type PageTemplate struct {
+type TemplatePage struct {
 	UUID        uuid.UUID
 	Name        string
 	Description string
@@ -18,12 +18,20 @@ type PageTemplate struct {
 	OwnerName string
 }
 
-type ContentTemplate struct {
+type TemplateContent struct {
 	UUID       uuid.UUID
 	Name       string
 	Template   string
 	Parameters []dbparameter.Parameter
 }
+
+type TemplateMeta struct {
+	UUID      uuid.UUID
+	Name      string
+	OwnerUUID uuid.UUID
+}
+
+// TODO: remove
 
 type Template struct {
 	UUID        uuid.UUID

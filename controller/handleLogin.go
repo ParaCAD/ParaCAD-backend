@@ -3,13 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
-	"net/mail"
 	"strings"
 	"time"
 
 	"github.com/ParaCAD/ParaCAD-backend/auth"
-	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/julienschmidt/httprouter"
 	"golang.org/x/crypto/bcrypt"
@@ -33,14 +32,12 @@ func (c *Controller) HandleLogin(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 	loginRequest.Username = strings.TrimSpace(loginRequest.Username)
 
-	user := database.UserSecurity{}
-	_, err = mail.ParseAddress(loginRequest.Username)
-	if err == nil {
-		user, err = c.db.GetUserSecurityByEmail(loginRequest.Username)
-	} else {
-		user, err = c.db.GetUserSecurityByUsername(loginRequest.Username)
-	}
+	user, err := c.db.GetUserSecurityByUsername(loginRequest.Username)
 	if err != nil {
+		utils.HandleErr(r, w, http.StatusFailedDependency, err)
+		return
+	}
+	if user == nil {
 		utils.HandleErr(r, w, http.StatusUnauthorized, errors.New("invalid credentials"))
 		return
 	}
@@ -51,8 +48,8 @@ func (c *Controller) HandleLogin(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	if user.Deleted {
-		utils.HandleErr(r, w, http.StatusUnauthorized, errors.New("this account has been deactivated"))
+	if user.Deleted != nil {
+		utils.HandleErr(r, w, http.StatusUnauthorized, fmt.Errorf("this account has been deactivated on %s", user.Deleted.Format(time.RFC3339)))
 		return
 	}
 

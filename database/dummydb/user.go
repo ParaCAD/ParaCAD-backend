@@ -14,42 +14,49 @@ var dummyUsername string = "Dummy User"
 var dummyEmail string = "test@test.com"
 var dummyPassword string = "password"
 
-func (db *DummyDB) getDummyUser() database.User {
-	return database.User{
+func (db *DummyDB) getDummyUser() *database.User {
+	return &database.User{
 		UUID:     dummyUserID,
 		Username: dummyUsername,
 		Email:    dummyEmail,
 		Role:     database.RoleUser,
-		Deleted:  false,
+		Deleted:  nil,
 	}
 }
 
-func (db *DummyDB) GetUserByUUID(userID uuid.UUID) (database.User, error) {
+func (db *DummyDB) GetUserByUUID(userID uuid.UUID) (*database.User, error) {
 	if userID == dummyUserID {
 		return db.getDummyUser(), nil
 	}
-	return database.User{}, fmt.Errorf("user %v not found", userID)
+	return nil, nil
 }
 
-func (db *DummyDB) GetUserByUsername(username string) (database.User, error) {
+func (db *DummyDB) GetUserByUsername(username string) (*database.User, error) {
 	if username == dummyUsername {
 		return db.getDummyUser(), nil
 	}
-	return database.User{}, fmt.Errorf("user %v not found", username)
+	return nil, nil
 }
 
-func (db *DummyDB) GetUserByEmail(email string) (database.User, error) {
+func (db *DummyDB) GetUserByEmail(email string) (*database.User, error) {
 	if email == dummyEmail {
 		return db.getDummyUser(), nil
 	}
-	return database.User{}, fmt.Errorf("user %v not found", email)
+	return nil, nil
 }
 
-func (db *DummyDB) GetUserSecurityByUsername(username string) (database.UserSecurity, error) {
+func (db *DummyDB) DeleteUser(userID uuid.UUID) error {
+	if userID == dummyUserID {
+		return nil
+	}
+	return fmt.Errorf("user %v not found", userID)
+}
+
+func (db *DummyDB) GetUserSecurityByUsername(username string) (*database.UserSecurity, error) {
 	if username == dummyEmail {
 		u := db.getDummyUser()
 		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
-		return database.UserSecurity{
+		return &database.UserSecurity{
 			Username: u.Username,
 			Email:    u.Email,
 			Password: password,
@@ -57,14 +64,14 @@ func (db *DummyDB) GetUserSecurityByUsername(username string) (database.UserSecu
 			Deleted:  u.Deleted,
 		}, nil
 	}
-	return database.UserSecurity{}, fmt.Errorf("user %v not found", username)
+	return nil, nil
 }
 
-func (db *DummyDB) GetUserSecurityByEmail(email string) (database.UserSecurity, error) {
+func (db *DummyDB) GetUserSecurityByEmail(email string) (*database.UserSecurity, error) {
 	if email == dummyEmail {
 		u := db.getDummyUser()
 		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
-		return database.UserSecurity{
+		return &database.UserSecurity{
 			Username: u.Username,
 			Email:    u.Email,
 			Password: password,
@@ -72,7 +79,7 @@ func (db *DummyDB) GetUserSecurityByEmail(email string) (database.UserSecurity, 
 			Deleted:  u.Deleted,
 		}, nil
 	}
-	return database.UserSecurity{}, fmt.Errorf("user %v not found", email)
+	return nil, nil
 }
 
 func (db *DummyDB) SetUserLastLogin(userID uuid.UUID, lastLoginTime time.Time) error {

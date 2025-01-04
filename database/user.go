@@ -11,7 +11,7 @@ type User struct {
 	Username string
 	Email    string
 	Role     role
-	Deleted  bool
+	Deleted  *time.Time
 }
 
 type role string
@@ -35,7 +35,7 @@ type UserSecurity struct {
 	Email     string
 	Password  []byte
 	Role      role
-	Deleted   bool
+	Deleted   *time.Time
 	Created   time.Time
 	LastLogin time.Time
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -38,15 +39,20 @@ func (a *Auth) Middleware(h httprouter.Handle) httprouter.Handle {
 	}
 }
 
-func GetUserIDAndRoleFromRequest(r *http.Request) (string, AuthRole, error) {
+func GetUserIDAndRoleFromRequest(r *http.Request) (uuid.UUID, AuthRole, error) {
 	ctx := r.Context()
-	userID, ok := ctx.Value(UserIDKey).(string)
+	userUUIDStr, ok := ctx.Value(UserIDKey).(string)
 	if !ok {
-		return "", "", errors.New("no user ID in context")
+		return uuid.UUID{}, "", errors.New("no user ID in context")
 	}
+	userUUID, err := uuid.Parse(userUUIDStr)
+	if err != nil {
+		return uuid.UUID{}, "", err
+	}
+
 	role, ok := ctx.Value(RoleKey).(AuthRole)
 	if !ok {
-		return "", "", errors.New("no role in context")
+		return uuid.UUID{}, "", errors.New("no role in context")
 	}
-	return userID, role, nil
+	return userUUID, role, nil
 }
