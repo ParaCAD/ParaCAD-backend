@@ -24,6 +24,7 @@ type GetTemplateResponse struct {
 type GetTemplateResponseParameter struct {
 	ParameterDisplayName  string                                  `json:"parameter_display_name"`
 	ParameterName         string                                  `json:"parameter_name"`
+	ParameterType         string                                  `json:"parameter_type"`
 	ParameterDefaultValue any                                     `json:"parameter_default_value"`
 	ParameterConstraints  []GetTemplateResponseParameterConstrain `json:"parameter_constraints"`
 }
@@ -82,6 +83,7 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	responseParameter := GetTemplateResponseParameter{
 		ParameterDisplayName: parameter.GetDisplayName(),
 		ParameterName:        parameter.GetName(),
+		ParameterType:        parameter.GetType().ParameterType().String(),
 	}
 	switch parameter.GetType() {
 	case dbparameter.ParameterTypeString:

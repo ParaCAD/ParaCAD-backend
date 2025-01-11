@@ -23,6 +23,10 @@ type ParameterType interface {
 	ParameterType() parameterType
 }
 
+func (p parameterType) String() string {
+	return string(p)
+}
+
 func (p parameterType) ParameterType() parameterType {
 	return p
 }

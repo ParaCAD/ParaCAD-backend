@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/ParaCAD/ParaCAD-backend/utils"
@@ -40,6 +41,6 @@ func (c *Controller) HandleGetTemplateContent(w http.ResponseWriter, r *http.Req
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.scad\"", templateContent.Name))
-	w.Header().Set("Content-Length", string(len(sb.String())))
+	w.Header().Set("Content-Length", strconv.Itoa(len(sb.String())))
 	w.Write([]byte(sb.String()))
 }
