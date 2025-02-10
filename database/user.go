@@ -37,5 +37,5 @@ type UserSecurity struct {
 	Role      role
 	Deleted   *time.Time
 	Created   time.Time
-	LastLogin time.Time
+	LastLogin *time.Time
 }

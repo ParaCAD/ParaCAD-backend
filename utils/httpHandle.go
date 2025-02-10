@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"net/http"
 	"strconv"
 
@@ -20,5 +21,8 @@ func SendFile(w http.ResponseWriter, file []byte, fileName string) {
 	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 	w.Header().Set("Content-Transfer-Encoding", "binary")
 	w.Header().Set("Expires", "0")
-	w.Write(file)
+
+	data := base64.NewEncoder(base64.StdEncoding, w)
+	defer data.Close()
+	data.Write(file)
 }

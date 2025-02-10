@@ -8,6 +8,7 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/controller"
 	"github.com/ParaCAD/ParaCAD-backend/database/dummydb"
+	"github.com/ParaCAD/ParaCAD-backend/database/sqldb"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 )
@@ -22,9 +23,16 @@ func main() {
 	// TODO: a real create database driver
 	db := dummydb.New()
 
+	sqlDB, err := sqldb.New(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sqlDB.Init()
+	defer sqlDB.Close()
+
 	con := controller.New(auth, db)
 
 	api := api.New(cfg.Port, auth, con)
-	err := api.Serve()
+	err = api.Serve()
 	log.Fatal(err)
 }

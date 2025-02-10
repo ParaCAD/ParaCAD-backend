@@ -9,7 +9,11 @@
             "program": "${workspaceFolder}",
             "env": {
                 "PORT": "8081",
-                "JWT_SECRET": "not_a_real_secret_lol"
+                "JWT_SECRET": "not_a_real_secret_lol",
+                "DB_HOST": "localhost",
+                "DB_USER": "postgres",
+                "DB_PASSWORD": "postgres",
+                "DB_NAME": "postgres"
             }
         }
     ]
