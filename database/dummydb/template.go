@@ -47,7 +47,7 @@ func (db *DummyDB) GetTemplateWithOwnerByUUID(templateID uuid.UUID) (*database.T
 			UUID:        template.UUID,
 			Name:        template.Name,
 			Description: template.Description,
-			PreviewURL:  "",
+			PreviewURL:  nil,
 			Parameters:  template.Parameters,
 
 			OwnerUUID: template.OwnerUUID,

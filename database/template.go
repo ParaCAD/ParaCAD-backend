@@ -8,14 +8,14 @@ import (
 // Database offers templates with different amount of fields, depending on the use case
 
 type TemplatePage struct {
-	UUID        uuid.UUID
-	Name        string
-	Description string
-	PreviewURL  string
+	UUID        uuid.UUID `db:"uuid"`
+	Name        string    `db:"name"`
+	Description string    `db:"description"`
+	PreviewURL  *string   `db:"preview"`
 	Parameters  []dbparameter.Parameter
 
-	OwnerUUID uuid.UUID
-	OwnerName string
+	OwnerUUID uuid.UUID `db:"owner_uuid"`
+	OwnerName string    `db:"owner_name"`
 }
 
 type TemplateContent struct {
@@ -34,11 +34,11 @@ type TemplateMeta struct {
 // TODO: remove
 
 type Template struct {
-	UUID        uuid.UUID
-	OwnerUUID   uuid.UUID
-	Name        string
-	Description string
-	Preview     []byte
-	Template    string
+	UUID        uuid.UUID `db:"uuid"`
+	OwnerUUID   uuid.UUID `db:"owner_uuid"`
+	Name        string    `db:"name"`
+	Description string    `db:"description"`
+	Preview     []byte    `db:"preview"`
+	Template    string    `db:"template"`
 	Parameters  []dbparameter.Parameter
 }

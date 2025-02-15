@@ -1,6 +1,6 @@
 package dbparameter
 
-// TODO: consider allowing constrains containing other parameters (make constrain an interface)
+// TODO: consider allowing constraints containing other parameters (make constraint an interface)
 
 type Parameter interface {
 	GetType() ParameterType

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS templates (
 	owner_uuid UUID NOT NULL REFERENCES users(uuid),
 	name TEXT NOT NULL,
 	description TEXT NOT NULL,
-	preview BYTEA NOT NULL,
+	preview TEXT,
 	template TEXT NOT NULL
 );
 
@@ -30,15 +30,15 @@ CREATE TABLE IF NOT EXISTS template_parameters (
 	default_value TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS template_parameters_constrains_types (
-	id INT PRIMARY KEY,
-	name TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS parameter_constraint_types (
+	constraint_type_id INT PRIMARY KEY,
+	constraint_type_name TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS template_parameters_constrains (
+CREATE TABLE IF NOT EXISTS template_parameters_constraints (
 	uuid UUID PRIMARY KEY,
 	template_parameter_uuid UUID NOT NULL REFERENCES template_parameters(uuid),
-	constrain_type INT NOT NULL REFERENCES template_parameters_constrains_types(id),
-	constrain_value TEXT NOT NULL
+	constraint_type_id INT NOT NULL REFERENCES parameter_constraint_types(constraint_type_id),
+	constraint_value TEXT NOT NULL
 );
 `

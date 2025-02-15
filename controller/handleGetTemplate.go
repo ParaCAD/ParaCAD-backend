@@ -22,26 +22,26 @@ type GetTemplateResponse struct {
 }
 
 type GetTemplateResponseParameter struct {
-	ParameterDisplayName  string                                  `json:"parameter_display_name"`
-	ParameterName         string                                  `json:"parameter_name"`
-	ParameterType         string                                  `json:"parameter_type"`
-	ParameterDefaultValue any                                     `json:"parameter_default_value"`
-	ParameterConstraints  []GetTemplateResponseParameterConstrain `json:"parameter_constraints"`
+	ParameterDisplayName  string                                   `json:"parameter_display_name"`
+	ParameterName         string                                   `json:"parameter_name"`
+	ParameterType         string                                   `json:"parameter_type"`
+	ParameterDefaultValue any                                      `json:"parameter_default_value"`
+	ParameterConstraints  []GetTemplateResponseParameterConstraint `json:"parameter_constraints"`
 }
 
-type GetTemplateResponseParameterConstrain struct {
-	Type  constrainType `json:"type"`
-	Value any           `json:"value"`
+type GetTemplateResponseParameterConstraint struct {
+	Type  constraintType `json:"type"`
+	Value any            `json:"value"`
 }
 
-type constrainType string
+type constraintType string
 
 const (
-	MinValue  constrainType = "min_value"
-	MaxValue  constrainType = "max_value"
-	Step      constrainType = "step"
-	MinLength constrainType = "min_length"
-	MaxLength constrainType = "max_length"
+	MinValue  constraintType = "min_value"
+	MaxValue  constraintType = "max_value"
+	Step      constraintType = "step"
+	MinLength constraintType = "min_length"
+	MaxLength constraintType = "max_length"
 )
 
 func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -61,7 +61,7 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplateUUID:        template.UUID,
 		TemplateName:        template.Name,
 		TemplateDescription: template.Description,
-		TemplatePreview:     template.PreviewURL,
+		TemplatePreview:     utils.ValueOrDefault(template.PreviewURL),
 		Parameters:          []GetTemplateResponseParameter{},
 
 		OwnerUUID: template.OwnerUUID,
@@ -89,7 +89,7 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	case dbparameter.ParameterTypeString:
 		p := parameter.(dbparameter.StringParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
 				Type:  MinLength,
 				Value: p.MinLength,
@@ -102,7 +102,7 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	case dbparameter.ParameterTypeInt:
 		p := parameter.(dbparameter.IntParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
 				Type:  MinValue,
 				Value: p.MinValue,
@@ -116,7 +116,7 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	case dbparameter.ParameterTypeFloat:
 		p := parameter.(dbparameter.FloatParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
 				Type:  MinValue,
 				Value: p.MinValue,
