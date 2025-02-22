@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ParaCAD/ParaCAD-backend/database"
+	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -26,26 +29,22 @@ func New(host, user, password, dbName string) (*SQLDB, error) {
 
 func (db *SQLDB) Init() {
 	db.db.MustExec(schema)
-	db.initParameterConstraintTypes(
-		"min_value",
-		"max_value",
-		"step",
-		"min_length",
-		"max_length",
-	)
+	db.initParameterConstraintTypes()
 	db.createTestData()
 }
 
-func (db *SQLDB) initParameterConstraintTypes(constraints ...string) {
-	for i, constraint := range constraints {
-		existingConstraint := ""
-		err := db.db.Get(&existingConstraint, `SELECT constraint_type_name FROM parameter_constraint_types WHERE constraint_type_name = $1`, constraint)
-		if err == nil {
-			continue
-		}
+func (db *SQLDB) initParameterConstraintTypes() {
+	_, err := db.db.Exec(`TRUNCATE TABLE parameter_constraint_types CASCADE`)
+	if err != nil {
+		panic(err)
+	}
+	for _, constraint := range dbparameter.ParameterConstraints {
 		db.db.MustExec(`
-		INSERT INTO parameter_constraint_types (constraint_type_id, constraint_type_name) VALUES ($1, $2);
-	`, i, constraint)
+		INSERT INTO parameter_constraint_types 
+		(constraint_type_id, constraint_type_name) 
+		VALUES 
+		($1, $2);
+		`, constraint.ID(), constraint.String())
 	}
 }
 
@@ -74,33 +73,29 @@ func (db *SQLDB) createTestUser() {
 
 func (db *SQLDB) createTestTemplate() {
 	db.db.MustExec(`
-		INSERT INTO templates
-		(uuid, owner_uuid, name, description, preview, template)
-		VALUES
-		('00000000-0000-0000-0000-000000000000',
-		'00000000-0000-0000-0000-000000000000',
-		'Test cube', 'Simple cube for testing', NULL, 'template')
+	TRUNCATE TABLE templates CASCADE
 	`)
-	db.db.MustExec(`
-		INSERT INTO template_parameters
-		(uuid, template_uuid, name, type, display_name, default_value)
-		VALUES
-		('00000000-0000-0000-0000-000000000000',
-		'00000000-0000-0000-0000-000000000000', 
-		'width', 'int', 'Width of the cube', '20')
-	`)
-	db.db.MustExec(`
-		INSERT INTO template_parameters_constraints
-		(uuid, template_parameter_uuid, constraint_type_id, constraint_value)
-		VALUES
-		('00000000-0000-0000-0000-000000000000',
-		'00000000-0000-0000-0000-000000000000', 0, '10')
-	`)
-	db.db.MustExec(`
-		INSERT INTO template_parameters_constraints
-		(uuid, template_parameter_uuid, constraint_type_id, constraint_value)
-		VALUES
-		('00000000-0000-0000-0000-000000000001',
-		'00000000-0000-0000-0000-000000000000', 1, '30')
-	`)
+	err := db.CreateTemplate(
+		database.Template{
+			UUID:        uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+			Name:        "Test Template",
+			Description: "This is a test template",
+			Preview:     nil,
+			Template:    `cube([10,width,10],false);`,
+			Parameters: []dbparameter.Parameter{
+				dbparameter.IntParameter{
+					Name:         "width",
+					DisplayName:  "Width of the cube",
+					DefaultValue: 20,
+					MinValue:     10,
+					MaxValue:     30,
+				},
+			},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
 }

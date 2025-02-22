@@ -1,7 +1,5 @@
 package dbparameter
 
-// TODO: consider allowing constraints containing other parameters (make constraint an interface)
-
 type Parameter interface {
 	GetType() ParameterType
 	GetName() string
@@ -10,23 +8,69 @@ type Parameter interface {
 	VerifyValue(string) error
 }
 
-type parameterType string
+type ParameterType string
 
 const (
-	ParameterTypeString parameterType = "string"
-	ParameterTypeInt    parameterType = "int"
-	ParameterTypeFloat  parameterType = "float"
-	ParameterTypeBool   parameterType = "bool"
+	ParameterTypeString ParameterType = "string"
+	ParameterTypeInt    ParameterType = "int"
+	ParameterTypeFloat  ParameterType = "float"
+	ParameterTypeBool   ParameterType = "bool"
 )
 
-type ParameterType interface {
-	ParameterType() parameterType
-}
-
-func (p parameterType) String() string {
+func (p ParameterType) String() string {
 	return string(p)
 }
 
-func (p parameterType) ParameterType() parameterType {
-	return p
+func (p ParameterType) ID() int {
+	switch p {
+	case ParameterTypeString:
+		return 0
+	case ParameterTypeInt:
+		return 1
+	case ParameterTypeFloat:
+		return 2
+	case ParameterTypeBool:
+		return 3
+	default:
+		return -1
+	}
+}
+
+type ParameterConstraintType string
+
+const (
+	ParameterConstraintMinLength ParameterConstraintType = "min_length"
+	ParameterConstraintMaxLength ParameterConstraintType = "max_length"
+	ParameterConstraintMinValue  ParameterConstraintType = "min_value"
+	ParameterConstraintMaxValue  ParameterConstraintType = "max_value"
+	ParameterConstraintStep      ParameterConstraintType = "step"
+)
+
+var ParameterConstraints = []ParameterConstraintType{
+	ParameterConstraintMinLength,
+	ParameterConstraintMaxLength,
+	ParameterConstraintMinValue,
+	ParameterConstraintMaxValue,
+	ParameterConstraintStep,
+}
+
+func (p ParameterConstraintType) String() string {
+	return string(p)
+}
+
+func (p ParameterConstraintType) ID() int {
+	switch p {
+	case ParameterConstraintMinLength:
+		return 0
+	case ParameterConstraintMaxLength:
+		return 1
+	case ParameterConstraintMinValue:
+		return 2
+	case ParameterConstraintMaxValue:
+		return 3
+	case ParameterConstraintStep:
+		return 4
+	default:
+		return -1
+	}
 }
