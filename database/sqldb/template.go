@@ -3,6 +3,7 @@ package sqldb
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
@@ -88,9 +89,9 @@ func (db *SQLDB) CreateTemplate(template database.Template) error {
 
 	query := `
 	INSERT INTO templates 
-	(uuid, owner_uuid, name, description, preview, template)
+	(uuid, owner_uuid, name, description, preview, template, created)
 	VALUES
-	($1, $2, $3, $4, $5, $6)
+	($1, $2, $3, $4, $5, $6, $7)
 	`
 	_, err = tx.Exec(query,
 		template.UUID,
@@ -98,7 +99,8 @@ func (db *SQLDB) CreateTemplate(template database.Template) error {
 		template.Name,
 		template.Description,
 		template.Preview,
-		template.Template)
+		template.Template,
+		time.Now())
 	if err != nil {
 		return fmt.Errorf("failed to insert template: %w", err)
 	}
@@ -229,10 +231,6 @@ func insertParameterConstraints(tx *sqlx.Tx, parameter dbparameter.Parameter, pa
 
 func (db *SQLDB) DeleteTemplate(templateUUID uuid.UUID) error {
 	return nil
-}
-
-func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]database.Template, error) {
-	return nil, nil
 }
 
 func (db *SQLDB) SetTemplateMarked(templateUUID uuid.UUID, marked bool) error {
