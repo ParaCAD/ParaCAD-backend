@@ -60,6 +60,9 @@ func (db *SQLDB) createTestData() {
 }
 
 func (db *SQLDB) createTestUser() {
+	db.db.MustExec(`
+	TRUNCATE TABLE users CASCADE
+	`)
 	password, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 
 	db.db.MustExec(`
@@ -90,6 +93,30 @@ func (db *SQLDB) createTestTemplate() {
 					DefaultValue: 20,
 					MinValue:     10,
 					MaxValue:     30,
+				},
+			},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.CreateTemplate(
+		database.Template{
+			UUID:        uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+			Name:        "Lorem Ipsum",
+			Description: "Lorem Ipsum Dolor Sit",
+			Preview:     nil,
+			Template:    `cube([30,width,10],false);`,
+			Parameters: []dbparameter.Parameter{
+				dbparameter.IntParameter{
+					Name:         "width",
+					DisplayName:  "Width of the cube",
+					DefaultValue: 30,
+					MinValue:     10,
+					MaxValue:     90,
 				},
 			},
 		},

@@ -23,7 +23,7 @@ type Database interface {
 	CreateTemplate(Template) error
 	DeleteTemplate(uuid.UUID) error
 
-	SearchTemplates(SearchParameters) ([]Template, error)
+	SearchTemplates(SearchParameters) ([]SearchResult, error)
 
 	SetTemplateMarked(uuid.UUID, bool) error
 }
