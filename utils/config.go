@@ -6,19 +6,31 @@ import (
 )
 
 type Config struct {
-	Port      string
-	JWTSecret string
+	Port       string
+	JWTSecret  string
+	DBHost     string
+	DBUser     string
+	DBPassword string
+	DBName     string
 }
 
 func MustLoadConfig() *Config {
 	envs := mustGetFromEnvs(
 		"PORT",
 		"JWT_SECRET",
+		"DB_HOST",
+		"DB_USER",
+		"DB_PASSWORD",
+		"DB_NAME",
 	)
 
 	return &Config{
-		Port:      envs["PORT"],
-		JWTSecret: envs["JWT_SECRET"],
+		Port:       envs["PORT"],
+		JWTSecret:  envs["JWT_SECRET"],
+		DBHost:     envs["DB_HOST"],
+		DBUser:     envs["DB_USER"],
+		DBPassword: envs["DB_PASSWORD"],
+		DBName:     envs["DB_NAME"],
 	}
 }
 

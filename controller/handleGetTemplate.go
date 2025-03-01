@@ -22,27 +22,17 @@ type GetTemplateResponse struct {
 }
 
 type GetTemplateResponseParameter struct {
-	ParameterDisplayName  string                                  `json:"parameter_display_name"`
-	ParameterName         string                                  `json:"parameter_name"`
-	ParameterType         string                                  `json:"parameter_type"`
-	ParameterDefaultValue any                                     `json:"parameter_default_value"`
-	ParameterConstraints  []GetTemplateResponseParameterConstrain `json:"parameter_constraints"`
+	ParameterDisplayName  string                                   `json:"parameter_display_name"`
+	ParameterName         string                                   `json:"parameter_name"`
+	ParameterType         string                                   `json:"parameter_type"`
+	ParameterDefaultValue any                                      `json:"parameter_default_value"`
+	ParameterConstraints  []GetTemplateResponseParameterConstraint `json:"parameter_constraints"`
 }
 
-type GetTemplateResponseParameterConstrain struct {
-	Type  constrainType `json:"type"`
-	Value any           `json:"value"`
+type GetTemplateResponseParameterConstraint struct {
+	Type  string `json:"type"`
+	Value any    `json:"value"`
 }
-
-type constrainType string
-
-const (
-	MinValue  constrainType = "min_value"
-	MaxValue  constrainType = "max_value"
-	Step      constrainType = "step"
-	MinLength constrainType = "min_length"
-	MaxLength constrainType = "max_length"
-)
 
 func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	templateUUID, err := uuid.Parse(p.ByName("UUID"))
@@ -61,7 +51,7 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplateUUID:        template.UUID,
 		TemplateName:        template.Name,
 		TemplateDescription: template.Description,
-		TemplatePreview:     template.PreviewURL,
+		TemplatePreview:     utils.ValueOrDefault(template.PreviewURL),
 		Parameters:          []GetTemplateResponseParameter{},
 
 		OwnerUUID: template.OwnerUUID,
@@ -83,32 +73,32 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	responseParameter := GetTemplateResponseParameter{
 		ParameterDisplayName: parameter.GetDisplayName(),
 		ParameterName:        parameter.GetName(),
-		ParameterType:        parameter.GetType().ParameterType().String(),
+		ParameterType:        parameter.GetType().String(),
 	}
 	switch parameter.GetType() {
 	case dbparameter.ParameterTypeString:
 		p := parameter.(dbparameter.StringParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
-				Type:  MinLength,
+				Type:  dbparameter.ParameterConstraintMinLength.String(),
 				Value: p.MinLength,
 			},
 			{
-				Type:  MaxLength,
+				Type:  dbparameter.ParameterConstraintMaxLength.String(),
 				Value: p.MaxLength,
 			},
 		}
 	case dbparameter.ParameterTypeInt:
 		p := parameter.(dbparameter.IntParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
-				Type:  MinValue,
+				Type:  dbparameter.ParameterConstraintMinValue.String(),
 				Value: p.MinValue,
 			},
 			{
-				Type:  MaxValue,
+				Type:  dbparameter.ParameterConstraintMaxValue.String(),
 				Value: p.MaxValue,
 			},
 		}
@@ -116,17 +106,17 @@ func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateRe
 	case dbparameter.ParameterTypeFloat:
 		p := parameter.(dbparameter.FloatParameter)
 		responseParameter.ParameterDefaultValue = p.DefaultValue
-		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstrain{
+		responseParameter.ParameterConstraints = []GetTemplateResponseParameterConstraint{
 			{
-				Type:  MinValue,
+				Type:  dbparameter.ParameterConstraintMinValue.String(),
 				Value: p.MinValue,
 			},
 			{
-				Type:  MaxValue,
+				Type:  dbparameter.ParameterConstraintMaxValue.String(),
 				Value: p.MaxValue,
 			},
 			{
-				Type:  Step,
+				Type:  dbparameter.ParameterConstraintStep.String(),
 				Value: p.Step,
 			},
 		}

@@ -37,7 +37,7 @@ func (c *Controller) HandleGenerateModel(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	template, err := c.db.GetTemplateByUUID(templateUUID)
+	template, err := c.db.GetTemplateContentByUUID(templateUUID)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusNotFound, err)
 		return

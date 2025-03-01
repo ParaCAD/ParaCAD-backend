@@ -7,11 +7,11 @@ import (
 )
 
 type User struct {
-	UUID     uuid.UUID
-	Username string
-	Email    string
-	Role     role
-	Deleted  *time.Time
+	UUID     uuid.UUID  `db:"uuid"`
+	Username string     `db:"username"`
+	Email    string     `db:"email"`
+	Role     role       `db:"role"`
+	Deleted  *time.Time `db:"deleted"`
 }
 
 type role string
@@ -30,12 +30,12 @@ func (r role) Role() role {
 }
 
 type UserSecurity struct {
-	UUID      uuid.UUID
-	Username  string
-	Email     string
-	Password  []byte
-	Role      role
-	Deleted   *time.Time
-	Created   time.Time
-	LastLogin time.Time
+	UUID      uuid.UUID  `db:"uuid"`
+	Username  string     `db:"username"`
+	Email     string     `db:"email"`
+	Password  []byte     `db:"password"`
+	Role      role       `db:"role"`
+	Deleted   *time.Time `db:"deleted"`
+	Created   time.Time  `db:"created"`
+	LastLogin *time.Time `db:"last_login"`
 }
