@@ -58,7 +58,7 @@ func (db *SQLDB) GetTemplateWithOwnerByUUID(templateUUID uuid.UUID) (*database.T
 func (db *SQLDB) GetTemplateContentByUUID(templateUUID uuid.UUID) (*database.TemplateContent, error) {
 	var template database.TemplateContent
 	query := `
-	SELECT uuid, name, template,
+	SELECT uuid, name, template
 	FROM templates
 	WHERE uuid = $1
 	`
