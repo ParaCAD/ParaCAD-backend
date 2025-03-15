@@ -13,10 +13,10 @@ import (
 
 type SearchRequest struct {
 	Query              string `json:"query"`
-	SearchDescriptions bool   `json:"searchDescriptions"`
+	SearchDescriptions bool   `json:"search_descriptions"`
 	Sorting            string `json:"sorting"`
-	PageNumber         int    `json:"pageNumber"`
-	PageSize           int    `json:"pageSize"`
+	PageNumber         int    `json:"page_number"`
+	PageSize           int    `json:"page_size"`
 }
 
 type SearchResponse struct {
@@ -27,8 +27,8 @@ type TemplatePreview struct {
 	UUID      string `json:"uuid"`
 	Name      string `json:"name"`
 	Preview   string `json:"preview"`
-	OwnerUUID string `json:"ownerUUID"`
-	OwnerName string `json:"ownerName"`
+	OwnerUUID string `json:"owner_uuid"`
+	OwnerName string `json:"owner_name"`
 }
 
 const maxPageSize = 25
