@@ -27,6 +27,7 @@ type TemplatePreview struct {
 	UUID      string `json:"uuid"`
 	Name      string `json:"name"`
 	Preview   string `json:"preview"`
+	Created   string `json:"created"`
 	OwnerUUID string `json:"owner_uuid"`
 	OwnerName string `json:"owner_name"`
 }
@@ -70,6 +71,7 @@ func (c *Controller) HandleSearch(w http.ResponseWriter, r *http.Request, _ http
 			UUID:      result.UUID,
 			Name:      result.Name,
 			Preview:   result.Preview,
+			Created:   result.Created.Format("2006-01-02 15:04"),
 			OwnerUUID: result.OwnerUUID,
 			OwnerName: result.OwnerName,
 		})

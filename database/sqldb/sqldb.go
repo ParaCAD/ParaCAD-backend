@@ -85,7 +85,7 @@ func (db *SQLDB) createTestTemplate() {
 			Name:        "Test Template",
 			Description: "This is a test template",
 			Preview:     nil,
-			Template:    `cube([10,width,10],false);`,
+			Template:    exampleTemplateCube,
 			Parameters: []dbparameter.Parameter{
 				dbparameter.IntParameter{
 					Name:         "width",
@@ -102,6 +102,8 @@ func (db *SQLDB) createTestTemplate() {
 		panic(err)
 	}
 
+	time.Sleep(500 * time.Millisecond)
+
 	err = db.CreateTemplate(
 		database.Template{
 			UUID:        uuid.MustParse("00000000-0000-0000-0000-000000000001"),
@@ -109,7 +111,7 @@ func (db *SQLDB) createTestTemplate() {
 			Name:        "Lorem Ipsum",
 			Description: "Lorem Ipsum Dolor Sit",
 			Preview:     nil,
-			Template:    `cube([30,width,10],false);`,
+			Template:    exampleTemplateCube,
 			Parameters: []dbparameter.Parameter{
 				dbparameter.IntParameter{
 					Name:         "width",
@@ -117,6 +119,72 @@ func (db *SQLDB) createTestTemplate() {
 					DefaultValue: 30,
 					MinValue:     10,
 					MaxValue:     90,
+				},
+			},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	time.Sleep(500 * time.Millisecond)
+
+	err = db.CreateTemplate(
+		database.Template{
+			UUID:        uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+			Name:        "Box with sliding lid",
+			Description: "Simple box with sliding lid. Lid is not attached to the box, allowing for easy access to the contents. Set parameters, generate box, check 'Generate lid', generate lid. All dimensions are in mm.",
+			Preview:     nil,
+			Template:    exampleTemplateBox,
+			Parameters: []dbparameter.Parameter{
+				dbparameter.IntParameter{
+					Name:         "content_length",
+					DisplayName:  "Content length",
+					DefaultValue: 139,
+					MinValue:     15,
+					MaxValue:     200,
+				},
+				dbparameter.IntParameter{
+					Name:         "content_width",
+					DisplayName:  "Content width",
+					DefaultValue: 70,
+					MinValue:     30,
+					MaxValue:     100,
+				},
+				dbparameter.IntParameter{
+					Name:         "content_height",
+					DisplayName:  "Content height",
+					DefaultValue: 15,
+					MinValue:     10,
+					MaxValue:     100,
+				},
+				dbparameter.FloatParameter{
+					Name:         "wall_thickness",
+					DisplayName:  "Wall thickness",
+					DefaultValue: 3,
+					MinValue:     2,
+					MaxValue:     10,
+				},
+				dbparameter.FloatParameter{
+					Name:         "lid_thickness",
+					DisplayName:  "Lid thickness",
+					DefaultValue: 1.5,
+					MinValue:     0.4,
+					MaxValue:     5,
+				},
+				dbparameter.FloatParameter{
+					Name:         "clearance",
+					DisplayName:  "Clearance",
+					DefaultValue: 0.2,
+					MinValue:     0,
+					MaxValue:     1,
+				},
+				dbparameter.BoolParameter{
+					Name:         "lid",
+					DisplayName:  "Generate lid",
+					DefaultValue: false,
 				},
 			},
 		},

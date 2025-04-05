@@ -1,5 +1,7 @@
 package database
 
+import "time"
+
 type SearchParameters struct {
 	Query              string
 	SearchDescriptions bool
@@ -16,11 +18,12 @@ const (
 )
 
 type SearchResult struct {
-	UUID      string `db:"uuid"`
-	Name      string `db:"name"`
-	Preview   string `db:"preview"`
-	OwnerUUID string `db:"owner_uuid"`
-	OwnerName string `db:"owner_name"`
+	UUID      string    `db:"uuid"`
+	Name      string    `db:"name"`
+	Preview   string    `db:"preview"`
+	Created   time.Time `db:"created"`
+	OwnerUUID string    `db:"owner_uuid"`
+	OwnerName string    `db:"owner_name"`
 }
 
 func ToSorting(s string) Sorting {

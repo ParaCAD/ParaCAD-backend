@@ -1,24 +1,28 @@
 package sqldb
 
-import "github.com/ParaCAD/ParaCAD-backend/database"
+import (
+	"fmt"
+
+	"github.com/ParaCAD/ParaCAD-backend/database"
+)
 
 func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]database.SearchResult, error) {
 	results := []database.SearchResult{}
 
 	query := `
-	SELECT t.uuid, t.name, t.preview, t.owner_uuid, u.username AS owner_name
+	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name
 	FROM templates t
 		JOIN users u ON t.owner_uuid = u.uuid
 	WHERE 1=1 AND 
 		(
 			$1 = '' -- empty search query - return all
 			OR 
-			(t.name ILIKE '%' || $1 || '%') -- search by name
+			(t.name ILIKE '%%' || $1 || '%%') -- search by name
 			OR
-			($2 IS TRUE AND t.description ILIKE '%' || $1 || '%') -- search by description
+			($2 IS TRUE AND t.description ILIKE '%%' || $1 || '%%') -- search by description
 		) 
-	ORDER BY $3
-	LIMIT $4 OFFSET $5;
+	ORDER BY %s
+	LIMIT $3 OFFSET $4;
 	`
 
 	orderByString := "t.created DESC"
@@ -29,10 +33,11 @@ func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]
 		orderByString = "t.created ASC"
 	}
 
+	query = fmt.Sprintf(query, orderByString)
+
 	err := db.db.Select(&results, query,
 		searchParameters.Query,
 		searchParameters.SearchDescriptions,
-		orderByString,
 		searchParameters.PageSize,
 		searchParameters.PageNumber-1,
 	)
