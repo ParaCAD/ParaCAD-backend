@@ -32,7 +32,7 @@ func (c *Controller) HandleLogin(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 	loginRequest.Username = strings.TrimSpace(loginRequest.Username)
 
-	user, err := c.db.GetUserSecurityByUsername(loginRequest.Username)
+	user, err := c.db.GetUserByUsername(loginRequest.Username)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusFailedDependency, err)
 		return

@@ -62,11 +62,7 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		response.Parameters = append(response.Parameters, parameterToResponseParameter(parameter))
 	}
 
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		utils.HandleErr(r, w, http.StatusInternalServerError, err)
-		return
-	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func parameterToResponseParameter(parameter dbparameter.Parameter) GetTemplateResponseParameter {
