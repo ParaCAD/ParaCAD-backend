@@ -11,9 +11,10 @@ import (
 type Database interface {
 	GetUserByUUID(uuid.UUID) (*User, error)
 	GetUserByUsername(string) (*User, error)
+	IsUsernameOrEmailUsed(string, string) (bool, error)
+	CreateUser(User) error
 	DeleteUser(uuid.UUID) error
 
-	GetUserSecurityByUsername(string) (*UserSecurity, error)
 	SetUserLastLogin(uuid.UUID, time.Time) error
 
 	GetTemplateByUUID(uuid.UUID) (*Template, error)

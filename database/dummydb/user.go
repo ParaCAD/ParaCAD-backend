@@ -6,7 +6,6 @@ import (
 
 	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var dummyUserID uuid.UUID = uuid.Nil
@@ -50,36 +49,6 @@ func (db *DummyDB) DeleteUser(userID uuid.UUID) error {
 		return nil
 	}
 	return fmt.Errorf("user %v not found", userID)
-}
-
-func (db *DummyDB) GetUserSecurityByUsername(username string) (*database.UserSecurity, error) {
-	if username == dummyEmail {
-		u := db.getDummyUser()
-		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
-		return &database.UserSecurity{
-			Username: u.Username,
-			Email:    u.Email,
-			Password: password,
-			Role:     u.Role,
-			Deleted:  u.Deleted,
-		}, nil
-	}
-	return nil, nil
-}
-
-func (db *DummyDB) GetUserSecurityByEmail(email string) (*database.UserSecurity, error) {
-	if email == dummyEmail {
-		u := db.getDummyUser()
-		password, _ := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
-		return &database.UserSecurity{
-			Username: u.Username,
-			Email:    u.Email,
-			Password: password,
-			Role:     u.Role,
-			Deleted:  u.Deleted,
-		}, nil
-	}
-	return nil, nil
 }
 
 func (db *DummyDB) SetUserLastLogin(userID uuid.UUID, lastLoginTime time.Time) error {

@@ -6,6 +6,13 @@ meta {
 
 post {
   url: http://localhost:8081/login
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "username": "test",
+    "password": "1234"
+  }
 }
