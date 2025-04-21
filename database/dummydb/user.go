@@ -11,7 +11,6 @@ import (
 var dummyUserID uuid.UUID = uuid.Nil
 var dummyUsername string = "Dummy User"
 var dummyEmail string = "test@test.com"
-var dummyPassword string = "password"
 
 func (db *DummyDB) getDummyUser() *database.User {
 	return &database.User{

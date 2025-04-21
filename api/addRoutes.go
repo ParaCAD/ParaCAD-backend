@@ -30,6 +30,8 @@ func (a *API) addRoutes() *API {
 	a.router.Handle(http.MethodDelete, "/template/:UUID", a.middlewareAuth(a.controller.HandleDeleteTemplate))
 	a.router.Handle(http.MethodPatch, "/template/:UUID/mark", a.middlewareAuth(a.controller.HandleMarkTemplate))
 
+	a.router.Handle(http.MethodGet, "/image/:FILENAME", a.middlewareOpen(a.controller.HandleGetImage))
+
 	// USER
 	a.router.Handle(http.MethodGet, "/user/:UUID", a.middlewareOpen(a.controller.HandleGetUser))
 

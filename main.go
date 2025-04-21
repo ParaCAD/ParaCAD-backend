@@ -8,6 +8,7 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/controller"
 	"github.com/ParaCAD/ParaCAD-backend/database/sqldb"
+	"github.com/ParaCAD/ParaCAD-backend/fsstore"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 )
@@ -19,9 +20,6 @@ func main() {
 
 	auth := auth.New(cfg.JWTSecret, 15)
 
-	// TODO: a real create database driver
-	// db := dummydb.New()
-
 	sqlDB, err := sqldb.New(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +27,12 @@ func main() {
 	sqlDB.Init()
 	defer sqlDB.Close()
 
-	con := controller.New(auth, sqlDB)
+	imageStore, err := fsstore.New(cfg.ImageStorageDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	con := controller.New(auth, sqlDB, imageStore)
 
 	api := api.New(cfg.Port, auth, con)
 	err = api.Serve()

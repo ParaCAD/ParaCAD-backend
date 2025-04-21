@@ -6,17 +6,20 @@ import (
 
 	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/database"
+	"github.com/ParaCAD/ParaCAD-backend/fsstore"
 )
 
 type Controller struct {
-	auth *auth.Auth
-	db   database.Database
+	auth       *auth.Auth
+	db         database.Database
+	imageStore *fsstore.FSStore
 }
 
-func New(auth *auth.Auth, db database.Database) *Controller {
+func New(auth *auth.Auth, db database.Database, imageStore *fsstore.FSStore) *Controller {
 	return &Controller{
-		auth: auth,
-		db:   db,
+		auth:       auth,
+		db:         db,
+		imageStore: imageStore,
 	}
 }
 

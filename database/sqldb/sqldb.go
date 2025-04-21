@@ -6,6 +6,7 @@ import (
 
 	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
+	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -84,7 +85,7 @@ func (db *SQLDB) createTestTemplate() {
 			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
 			Name:        "Test Template",
 			Description: "This is a test template",
-			Preview:     nil,
+			Preview:     utils.GetPtr("00000000-0000-0000-0000-000000000000.png"),
 			Template:    exampleTemplateCube,
 			Parameters: []dbparameter.Parameter{
 				dbparameter.IntParameter{
@@ -110,7 +111,7 @@ func (db *SQLDB) createTestTemplate() {
 			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
 			Name:        "Lorem Ipsum",
 			Description: "Lorem Ipsum Dolor Sit",
-			Preview:     nil,
+			Preview:     utils.GetPtr("00000000-0000-0000-0000-000000000001.png"),
 			Template:    exampleTemplateCube,
 			Parameters: []dbparameter.Parameter{
 				dbparameter.IntParameter{
@@ -136,7 +137,7 @@ func (db *SQLDB) createTestTemplate() {
 			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
 			Name:        "Box with sliding lid",
 			Description: "Simple box with sliding lid. Lid is not attached to the box, allowing for easy access to the contents. Set parameters, generate box, check 'Generate lid', generate lid. All dimensions are in mm.",
-			Preview:     nil,
+			Preview:     utils.GetPtr("00000000-0000-0000-0000-000000000002.png"),
 			Template:    exampleTemplateBox,
 			Parameters: []dbparameter.Parameter{
 				dbparameter.IntParameter{

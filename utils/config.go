@@ -6,12 +6,13 @@ import (
 )
 
 type Config struct {
-	Port       string
-	JWTSecret  string
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBName     string
+	Port            string
+	JWTSecret       string
+	DBHost          string
+	DBUser          string
+	DBPassword      string
+	DBName          string
+	ImageStorageDir string
 }
 
 func MustLoadConfig() *Config {
@@ -22,15 +23,17 @@ func MustLoadConfig() *Config {
 		"DB_USER",
 		"DB_PASSWORD",
 		"DB_NAME",
+		"IMAGE_STORAGE_DIR",
 	)
 
 	return &Config{
-		Port:       envs["PORT"],
-		JWTSecret:  envs["JWT_SECRET"],
-		DBHost:     envs["DB_HOST"],
-		DBUser:     envs["DB_USER"],
-		DBPassword: envs["DB_PASSWORD"],
-		DBName:     envs["DB_NAME"],
+		Port:            envs["PORT"],
+		JWTSecret:       envs["JWT_SECRET"],
+		DBHost:          envs["DB_HOST"],
+		DBUser:          envs["DB_USER"],
+		DBPassword:      envs["DB_PASSWORD"],
+		DBName:          envs["DB_NAME"],
+		ImageStorageDir: envs["IMAGE_STORAGE_DIR"],
 	}
 }
 

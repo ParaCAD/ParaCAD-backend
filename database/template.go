@@ -38,7 +38,7 @@ type Template struct {
 	OwnerUUID   uuid.UUID `db:"owner_uuid"`
 	Name        string    `db:"name"`
 	Description string    `db:"description"`
-	Preview     []byte    `db:"preview"`
+	Preview     *string   `db:"preview"`
 	Template    string    `db:"template"`
 	Parameters  []dbparameter.Parameter
 }

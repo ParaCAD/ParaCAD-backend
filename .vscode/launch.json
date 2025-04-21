@@ -13,7 +13,8 @@
                 "DB_HOST": "localhost",
                 "DB_USER": "postgres",
                 "DB_PASSWORD": "postgres",
-                "DB_NAME": "postgres"
+                "DB_NAME": "postgres",
+                "IMAGE_STORAGE_DIR": "./images",
             }
         },
         {
