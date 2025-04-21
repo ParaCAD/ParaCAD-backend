@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ParaCAD/ParaCAD-backend/utils"
@@ -15,7 +16,7 @@ func (c *Controller) HandleGetImage(w http.ResponseWriter, r *http.Request, p ht
 		return
 	}
 	if imageData == nil {
-		utils.HandleErr(r, w, http.StatusNotFound, nil)
+		utils.HandleErr(r, w, http.StatusNotFound, errors.New("image not found"))
 		return
 	}
 
