@@ -19,16 +19,16 @@ type TemplatePage struct {
 }
 
 type TemplateContent struct {
-	UUID       uuid.UUID
-	Name       string
-	Template   string
+	UUID       uuid.UUID `db:"uuid"`
+	Name       string    `db:"name"`
+	Template   string    `db:"template"`
 	Parameters []dbparameter.Parameter
 }
 
 type TemplateMeta struct {
-	UUID      uuid.UUID
-	Name      string
-	OwnerUUID uuid.UUID
+	UUID      uuid.UUID `db:"uuid"`
+	Name      string    `db:"name"`
+	OwnerUUID uuid.UUID `db:"owner_uuid"`
 }
 
 // TODO: remove

@@ -9,5 +9,6 @@ RUN go build -o /app/paracad .
 FROM alpine:3.21
 RUN apk add --no-cache openscad
 COPY --from=build /app/paracad /app/paracad
+COPY images /app/images
 EXPOSE 8081
 CMD ["/app/paracad"]

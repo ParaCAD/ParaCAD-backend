@@ -71,9 +71,9 @@ func (db *SQLDB) CreateUser(user database.User) error {
 
 func (db *SQLDB) DeleteUser(uuid uuid.UUID) error {
 	query := `
-	UPDATE users SET deleted = 1 WHERE uuid = $2
+	UPDATE users SET deleted = $1 WHERE uuid = $2
 	`
-	res, err := db.db.Exec(query, uuid)
+	res, err := db.db.Exec(query, time.Now(), uuid)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -26,7 +27,7 @@ func (c *Controller) HandleGetTemplateContent(w http.ResponseWriter, r *http.Req
 		return
 	}
 	if templateContent == nil {
-		utils.HandleErr(r, w, http.StatusNotFound, nil)
+		utils.HandleErr(r, w, http.StatusNotFound, errors.New("template not found"))
 		return
 	}
 

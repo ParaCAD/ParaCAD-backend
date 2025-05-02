@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS templates (
 	description TEXT NOT NULL,
 	preview TEXT,
 	template TEXT NOT NULL,
-	created TIMESTAMP NOT NULL
+	created TIMESTAMP NOT NULL,
+	deleted TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS template_parameters (

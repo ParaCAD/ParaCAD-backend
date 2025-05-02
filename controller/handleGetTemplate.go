@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
@@ -43,7 +44,11 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 
 	template, err := c.db.GetTemplateWithOwnerByUUID(templateUUID)
 	if err != nil {
-		utils.HandleErr(r, w, http.StatusNotFound, err)
+		utils.HandleErr(r, w, http.StatusFailedDependency, err)
+		return
+	}
+	if template == nil {
+		utils.HandleErr(r, w, http.StatusNotFound, errors.New("template not found"))
 		return
 	}
 

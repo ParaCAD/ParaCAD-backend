@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ParaCAD/ParaCAD-backend/auth"
@@ -23,7 +24,7 @@ func (c *Controller) HandleDeleteUser(w http.ResponseWriter, r *http.Request, p 
 	}
 
 	if loggedInUserUUID != userUUID && loggedInUserRole != auth.RoleAdmin {
-		utils.HandleErr(r, w, http.StatusForbidden, nil)
+		utils.HandleErr(r, w, http.StatusForbidden, errors.New("can not delete another user"))
 		return
 	}
 

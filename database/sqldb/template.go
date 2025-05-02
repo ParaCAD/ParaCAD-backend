@@ -16,7 +16,7 @@ func (db *SQLDB) GetTemplateByUUID(templateUUID uuid.UUID) (*database.Template, 
 	query := `
 	SELECT uuid, owner_uuid, name, description, preview, template
 	FROM templates
-	WHERE uuid = $1
+	WHERE uuid = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&template, query, templateUUID)
 	if err != nil {
@@ -39,7 +39,7 @@ func (db *SQLDB) GetTemplateWithOwnerByUUID(templateUUID uuid.UUID) (*database.T
 	 	t.owner_uuid, u.username AS owner_name
 	FROM templates t	
 		JOIN users u ON t.owner_uuid = u.uuid
-	WHERE t.uuid = $1
+	WHERE t.uuid = $1 AND t.deleted IS NULL
 	`
 	err := db.db.Get(&template, query, templateUUID)
 	if err != nil {
@@ -60,7 +60,7 @@ func (db *SQLDB) GetTemplateContentByUUID(templateUUID uuid.UUID) (*database.Tem
 	query := `
 	SELECT uuid, name, template
 	FROM templates
-	WHERE uuid = $1
+	WHERE uuid = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&template, query, templateUUID)
 	if err != nil {
@@ -77,7 +77,20 @@ func (db *SQLDB) GetTemplateContentByUUID(templateUUID uuid.UUID) (*database.Tem
 }
 
 func (db *SQLDB) GetTemplateMetaByUUID(templateUUID uuid.UUID) (*database.TemplateMeta, error) {
-	return nil, nil
+	var template database.TemplateMeta
+	query := `
+	SELECT uuid, name, owner_uuid
+	FROM templates
+	WHERE uuid = $1 AND deleted IS NULL
+	`
+	err := db.db.Get(&template, query, templateUUID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &template, nil
 }
 
 func (db *SQLDB) CreateTemplate(template database.Template) error {
@@ -230,6 +243,22 @@ func insertParameterConstraints(tx *sqlx.Tx, parameter dbparameter.Parameter, pa
 }
 
 func (db *SQLDB) DeleteTemplate(templateUUID uuid.UUID) error {
+	query := `
+	UPDATE templates
+	SET deleted = $1
+	WHERE uuid = $2
+	`
+	res, err := db.db.Exec(query, time.Now(), templateUUID)
+	if err != nil {
+		return fmt.Errorf("failed to delete template: %w", err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("no template with uuid %s found", templateUUID)
+	}
 	return nil
 }
 

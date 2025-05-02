@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ParaCAD/ParaCAD-backend/auth"
@@ -28,12 +29,12 @@ func (c *Controller) HandleDeleteTemplate(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if templateMeta == nil {
-		utils.HandleErr(r, w, http.StatusNotFound, nil)
+		utils.HandleErr(r, w, http.StatusNotFound, errors.New("template not found"))
 		return
 	}
 
 	if templateMeta.OwnerUUID != loggedInUserUUID && loggedInUserRole != auth.RoleAdmin {
-		utils.HandleErr(r, w, http.StatusForbidden, nil)
+		utils.HandleErr(r, w, http.StatusForbidden, errors.New("user is not the owner of the template"))
 		return
 	}
 
