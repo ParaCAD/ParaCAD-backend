@@ -53,7 +53,7 @@ func (c *Controller) HandleLogin(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	token, err := c.auth.CreateToken(user.UUID.String(), auth.AuthRole(user.Role))
+	token, err := c.auth.CreateToken(user.UUID.String(), user.Username, auth.AuthRole(user.Role))
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusInternalServerError, err)
 		return

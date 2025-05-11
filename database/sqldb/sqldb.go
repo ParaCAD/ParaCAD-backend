@@ -167,13 +167,15 @@ func (db *SQLDB) createTestTemplate() {
 					DefaultValue: 3,
 					MinValue:     2,
 					MaxValue:     10,
+					Step:         0.2,
 				},
 				dbparameter.FloatParameter{
 					Name:         "lid_thickness",
 					DisplayName:  "Lid thickness",
-					DefaultValue: 1.5,
+					DefaultValue: 1.6,
 					MinValue:     0.4,
 					MaxValue:     5,
+					Step:         0.4,
 				},
 				dbparameter.FloatParameter{
 					Name:         "clearance",
@@ -181,6 +183,7 @@ func (db *SQLDB) createTestTemplate() {
 					DefaultValue: 0.2,
 					MinValue:     0,
 					MaxValue:     1,
+					Step:         0.1,
 				},
 				dbparameter.BoolParameter{
 					Name:         "lid",
