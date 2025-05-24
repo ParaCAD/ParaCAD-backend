@@ -67,14 +67,7 @@ func (c *Controller) HandleSearch(w http.ResponseWriter, r *http.Request, _ http
 	}
 
 	for _, result := range results {
-		response.Results = append(response.Results, TemplatePreview{
-			UUID:      result.UUID,
-			Name:      result.Name,
-			Preview:   result.Preview,
-			Created:   result.Created.Format("2006-01-02 15:04"),
-			OwnerUUID: result.OwnerUUID,
-			OwnerName: result.OwnerName,
-		})
+		response.Results = append(response.Results, searchResponseToTemplatePreview(result))
 	}
 
 	err = json.NewEncoder(w).Encode(response)
@@ -95,4 +88,15 @@ func (r *SearchRequest) Validate() error {
 		return fmt.Errorf("page size must be less than or equal to %d", maxPageSize)
 	}
 	return nil
+}
+
+func searchResponseToTemplatePreview(result database.SearchResult) TemplatePreview {
+	return TemplatePreview{
+		UUID:      result.UUID,
+		Name:      result.Name,
+		Preview:   result.Preview,
+		Created:   result.Created.Format("2006-01-02 15:04"),
+		OwnerUUID: result.OwnerUUID,
+		OwnerName: result.OwnerName,
+	}
 }

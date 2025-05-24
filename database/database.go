@@ -21,6 +21,7 @@ type Database interface {
 	GetTemplateWithOwnerByUUID(uuid.UUID) (*TemplatePage, error)
 	GetTemplateContentByUUID(uuid.UUID) (*TemplateContent, error)
 	GetTemplateMetaByUUID(uuid.UUID) (*TemplateMeta, error)
+	GetTemplatesByOwnerUUID(uuid.UUID, int, int) ([]SearchResult, error)
 	CreateTemplate(Template) error
 	DeleteTemplate(uuid.UUID) error
 

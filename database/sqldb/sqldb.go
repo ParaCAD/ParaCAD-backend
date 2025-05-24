@@ -73,6 +73,15 @@ func (db *SQLDB) createTestUser() {
 		('00000000-0000-0000-0000-000000000000', 
 		'Dummy User', 'test@test.com', $1, 'user', $2)
 	`, password, time.Now())
+
+	password, _ = bcrypt.GenerateFromPassword([]byte("1234"), bcrypt.DefaultCost)
+	db.db.MustExec(`
+		INSERT INTO users 
+		(uuid, username, email, password, role, created)
+		VALUES
+		('00000000-0000-0000-0000-000000000001', 
+		'test', 'aaa@aa.com', $1, 'user', $2)
+	`, password, time.Now())
 }
 
 func (db *SQLDB) createTestTemplate() {
@@ -189,6 +198,49 @@ func (db *SQLDB) createTestTemplate() {
 					Name:         "lid",
 					DisplayName:  "Generate lid",
 					DefaultValue: false,
+				},
+			},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	time.Sleep(500 * time.Millisecond)
+
+	err = db.CreateTemplate(
+		database.Template{
+			UUID:        uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+			OwnerUUID:   uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			Name:        "Measuring scoop",
+			Description: "A scoop for measuring liquids or powders.",
+			Preview:     utils.GetPtr("00000000-0000-0000-0000-000000000003.png"),
+			Template:    exampleTemplateScoop,
+			Parameters: []dbparameter.Parameter{
+				dbparameter.FloatParameter{
+					Name:         "volume",
+					DisplayName:  "Volume (cm3)",
+					DefaultValue: 4,
+					MinValue:     2,
+					MaxValue:     80,
+					Step:         0.1,
+				},
+				dbparameter.FloatParameter{
+					Name:         "wall_thickness",
+					DisplayName:  "Wall thickness (mm)",
+					DefaultValue: 1.2,
+					MinValue:     1,
+					MaxValue:     5,
+					Step:         0.2,
+				},
+				dbparameter.FloatParameter{
+					Name:         "void_diameter",
+					DisplayName:  "Inner diameter (mm)",
+					DefaultValue: 20,
+					MinValue:     10,
+					MaxValue:     80,
+					Step:         0.5,
 				},
 			},
 		},

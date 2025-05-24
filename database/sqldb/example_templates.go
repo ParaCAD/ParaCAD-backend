@@ -55,3 +55,23 @@ if (lid) {
     };
 };
 `
+
+const exampleTemplateScoop = `
+$fa=2;
+$fs=0.2;
+$fn=1000;
+
+volume_mm3=volume*10*10*10;
+
+void_radius=void_diameter/2;
+void_height=(4*volume_mm3)/(3.1415*void_diameter*void_diameter);
+
+difference() {
+    cylinder(void_height,
+        void_radius+wall_thickness,
+        void_radius+wall_thickness);
+    translate([0,0,wall_thickness]){
+        cylinder(void_height*1.5,void_radius,void_radius);
+    };
+}
+`
