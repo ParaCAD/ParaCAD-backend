@@ -94,7 +94,7 @@ func searchResponseToTemplatePreview(result database.SearchResult) TemplatePrevi
 	return TemplatePreview{
 		UUID:      result.UUID,
 		Name:      result.Name,
-		Preview:   result.Preview,
+		Preview:   utils.ValueOrDefault(result.Preview, "not-found.png"),
 		Created:   result.Created.Format("2006-01-02 15:04"),
 		OwnerUUID: result.OwnerUUID,
 		OwnerName: result.OwnerName,
