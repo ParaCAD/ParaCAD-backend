@@ -28,4 +28,7 @@ type Database interface {
 	SearchTemplates(SearchParameters) ([]SearchResult, error)
 
 	SetTemplateMarked(uuid.UUID, bool) error
+
+	CacheGetModel(string) ([]byte, error)
+	CacheSetModel(string, []byte) error
 }

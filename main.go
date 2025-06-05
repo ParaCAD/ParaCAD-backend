@@ -9,6 +9,8 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/controller"
 	"github.com/ParaCAD/ParaCAD-backend/database/sqldb"
 	"github.com/ParaCAD/ParaCAD-backend/fsstore"
+	"github.com/ParaCAD/ParaCAD-backend/generator/cachinggenerator"
+	"github.com/ParaCAD/ParaCAD-backend/generator/openscadgenerator"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 )
@@ -32,7 +34,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	con := controller.New(auth, sqlDB, imageStore)
+	generator := cachinggenerator.NewCachingGenerator(openscadgenerator.NewOpenSCADGenerator(), sqlDB)
+
+	con := controller.New(auth, sqlDB, imageStore, generator)
 
 	api := api.New(cfg.Port, auth, con)
 	err = api.Serve()
