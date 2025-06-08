@@ -43,4 +43,10 @@ CREATE TABLE IF NOT EXISTS template_parameters_constraints (
 	constraint_type_id INT NOT NULL REFERENCES parameter_constraint_types(constraint_type_id),
 	constraint_value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS cache (
+	key TEXT PRIMARY KEY,
+	value BYTEA NOT NULL,
+	created TIMESTAMP NOT NULL
+);
 `

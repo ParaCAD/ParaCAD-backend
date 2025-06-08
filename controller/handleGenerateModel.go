@@ -68,7 +68,7 @@ func (c *Controller) HandleGenerateModel(w http.ResponseWriter, r *http.Request,
 		})
 	}
 
-	generatedModel, err := generator.Generate(generatorTemplate)
+	generatedModel, err := c.generator.GenerateModel(generatorTemplate)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusInternalServerError, err)
 		return

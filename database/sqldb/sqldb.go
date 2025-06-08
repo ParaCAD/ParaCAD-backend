@@ -32,6 +32,7 @@ func (db *SQLDB) Init() {
 	db.db.MustExec(schema)
 	db.initParameterConstraintTypes()
 	db.createTestData()
+	go db.cacheCleanerJob()
 }
 
 func (db *SQLDB) initParameterConstraintTypes() {
