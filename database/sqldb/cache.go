@@ -1,7 +1,8 @@
 package sqldb
 
 import (
-	"fmt"
+	"database/sql"
+	"log"
 	"time"
 )
 
@@ -12,24 +13,65 @@ type CacheItem struct {
 }
 
 func (db *SQLDB) CacheGetModel(key string) ([]byte, error) {
-	fmt.Println("CacheGetModel called, but cache is not implemented yet. " + key)
-	// TODO: Implement cache
-	return nil, nil
+	var cachedModel CacheItem
+	query := `
+	SELECT key, value, created
+	FROM cache
+	WHERE key = $1
+	`
+	err := db.db.Get(&cachedModel, query, key)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return cachedModel.Value, nil
 }
 
 func (db *SQLDB) CacheSetModel(key string, model []byte) error {
-	fmt.Println("CacheSetModel called, but cache is not implemented yet. " + key)
+	query := `
+	INSERT INTO cache 
+	(key, value, created)
+	VALUES
+	($1, $2, $3)
+	`
+
+	_, err := db.db.Exec(query, key, model, time.Now())
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (db *SQLDB) cacheCleanerJob() {
-	db.clearCache()
+	err := db.clearCache()
+	if err != nil {
+		log.Printf("Error clearing cache: %s", err.Error())
+	}
 
 	ticker := time.NewTicker(24 * time.Hour)
 	for range ticker.C {
-		db.clearCache()
+		err = db.clearCache()
+		if err != nil {
+			log.Printf("Error clearing cache: %s", err.Error())
+		}
 	}
 }
 
-func (db *SQLDB) clearCache() {
+func (db *SQLDB) clearCache() error {
+	query := `
+	DELETE FROM cache
+	WHERE created < $1
+	`
+
+	expirationTime := time.Now().Add(-24 * time.Hour)
+
+	_, err := db.db.Exec(query, expirationTime)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
