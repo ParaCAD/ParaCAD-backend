@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/database"
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
+	"github.com/ParaCAD/ParaCAD-backend/generator"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
@@ -52,22 +54,47 @@ func (c *Controller) HandleCreateTemplate(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Validate request (field lengths, parameter types and constraints)
 	err = validateCreateTemplateRequest(request)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusBadRequest, err)
 		return
 	}
 
-	fmt.Printf("Creating template:\n[name]:\t%s\n[desc]:\t%s\n[cont]:\t%s\n", request.TemplateName, request.TemplateDescription, request.TemplateContent)
+	userUUID, _, err := auth.GetUserIDAndRoleFromRequest(r)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusInternalServerError, fmt.Errorf("failed to get user ID from request: %w", err))
+		return
+	}
+
+	// Generate model from template to ensure it is valid
+	defaultFilledTemplate := templateRequestToDefaultFilledTemplate(request)
+	_, err = c.generator.GenerateModel(defaultFilledTemplate)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate model from template: %w", err))
+		return
+	}
+
+	// Generate preview
+	preview, err := c.generator.GeneratePreview(defaultFilledTemplate)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate preview from template: %w", err))
+		return
+	}
 
 	templateUUID := uuid.New()
-
-	template, err := templateRequestToTemplate(templateUUID, request)
+	template, err := templateRequestToTemplate(templateUUID, userUUID, request)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusBadRequest, err)
 		return
 	}
 
+	// Save template to database and image store
+	err = c.imageStore.SaveFile(*template.Preview, preview)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusFailedDependency, fmt.Errorf("failed to save template preview: %w", err))
+		return
+	}
 	err = c.db.CreateTemplate(template)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusFailedDependency, err)
@@ -105,14 +132,32 @@ func validateCreateTemplateRequest(request CreateTemplateRequest) error {
 	return nil
 }
 
-func templateRequestToTemplate(templateUUID uuid.UUID, request CreateTemplateRequest) (database.Template, error) {
+func templateRequestToTemplate(templateUUID uuid.UUID, userUUID uuid.UUID, request CreateTemplateRequest) (database.Template, error) {
 	template := database.Template{
 		UUID:        templateUUID,
+		OwnerUUID:   userUUID,
 		Name:        request.TemplateName,
 		Description: request.TemplateDescription,
+		Preview:     utils.GetPtr(templateUUID.String() + ".png"),
 		Template:    request.TemplateContent,
 		Parameters:  []dbparameter.Parameter{},
 	}
 
 	return template, nil
+}
+
+func templateRequestToDefaultFilledTemplate(request CreateTemplateRequest) generator.FilledTemplate {
+	filledTemplate := generator.FilledTemplate{
+		UUID:     uuid.Nil,
+		Template: []byte(request.TemplateContent),
+	}
+
+	for _, parameter := range request.Parameters {
+		filledTemplate.Params = append(filledTemplate.Params, generator.Parameter{
+			Key:   parameter.ParameterName,
+			Value: parameter.ParameterDefaultValue,
+		})
+	}
+
+	return filledTemplate
 }
