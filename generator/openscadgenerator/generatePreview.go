@@ -11,15 +11,10 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/utils"
 )
 
-func (g OpenSCADGenerator) GenerateModel(template generator.FilledTemplate) ([]byte, error) {
+func (g OpenSCADGenerator) GeneratePreview(template generator.FilledTemplate) ([]byte, error) {
 	if runtime.GOOS != "linux" {
 		return nil, fmt.Errorf("runtime.GOOS != linux")
 	}
-
-	//programDir, err := os.Getwd()
-	// if err != nil {
-	// 	return nil, fmt.Errorf("os.Getwd(): %s", err.Error())
-	// }
 
 	// Ensure temp dir exists
 	err := os.MkdirAll(tempDirName, 0700)
@@ -59,12 +54,13 @@ func (g OpenSCADGenerator) GenerateModel(template generator.FilledTemplate) ([]b
 		return nil, fmt.Errorf("scadFile.Close(): %s", err.Error())
 	}
 
-	outputFileName := template.UUID.String() + "_" + tempID + ".stl"
+	outputFileName := template.UUID.String() + "_" + tempID + ".png"
 	outputFilePath := path.Join(tempDirName, outputFileName)
 
 	// Generate model
 	cmdArgs := []string{}
-	cmdArgs = append(cmdArgs, "--export-format=binstl")
+	cmdArgs = append(cmdArgs, "--export-format=png")
+	cmdArgs = append(cmdArgs, "--colorscheme=BeforeDawn")
 	cmdArgs = append(cmdArgs, "-o"+outputFilePath)
 	cmdArgs = append(cmdArgs, scadFilePath)
 
@@ -75,10 +71,10 @@ func (g OpenSCADGenerator) GenerateModel(template generator.FilledTemplate) ([]b
 		return nil, fmt.Errorf("cmd.Run(): %s", string(output))
 	}
 
-	model, err := os.ReadFile(outputFilePath)
+	preview, err := os.ReadFile(outputFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("os.ReadFile(outputFilePath): %s", err.Error())
 	}
 
-	return model, nil
+	return preview, nil
 }

@@ -13,8 +13,9 @@ func (a *API) middlewareOpen(h httprouter.Handle) httprouter.Handle {
 }
 
 func (a *API) middlewareAuth(h httprouter.Handle) httprouter.Handle {
+	h = a.auth.Middleware(h)
 	h = logging.Middleware(h)
-	return a.auth.Middleware(h)
+	return h
 }
 
 func (a *API) addRoutes() *API {

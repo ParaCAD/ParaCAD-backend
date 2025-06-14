@@ -38,6 +38,8 @@ func main() {
 
 	con := controller.New(auth, sqlDB, imageStore, generator)
 
+	createExampleUsersAndTemplates(con)
+
 	api := api.New(cfg.Port, auth, con)
 	err = api.Serve()
 	log.Fatal(err)

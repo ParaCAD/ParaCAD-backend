@@ -56,7 +56,7 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplateUUID:        template.UUID,
 		TemplateName:        template.Name,
 		TemplateDescription: template.Description,
-		TemplatePreview:     utils.ValueOrDefault(template.PreviewURL),
+		TemplatePreview:     utils.ValueOrDefault(template.PreviewURL, "not-found.png"),
 		Parameters:          []GetTemplateResponseParameter{},
 
 		OwnerUUID: template.OwnerUUID,
