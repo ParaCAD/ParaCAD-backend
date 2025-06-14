@@ -2,11 +2,8 @@ package controller
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"slices"
-	"strconv"
 
 	"github.com/ParaCAD/ParaCAD-backend/auth"
 	"github.com/ParaCAD/ParaCAD-backend/database"
@@ -70,25 +67,24 @@ func (c *Controller) HandleCreateTemplate(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Generate model from template to ensure it is valid
-	defaultFilledTemplate := templateRequestToDefaultFilledTemplate(request)
-	_, err = c.generator.GenerateModel(defaultFilledTemplate)
+	parameters, err := parseAndValidateCreateTemplateParameters(request.Parameters)
 	if err != nil {
-		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate model from template: %w", err))
-		return
-	}
-
-	// Generate preview
-	preview, err := c.generator.GeneratePreview(defaultFilledTemplate)
-	if err != nil {
-		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate preview from template: %w", err))
+		utils.HandleErr(r, w, http.StatusBadRequest, fmt.Errorf("failed to parse template parameters: %w", err))
 		return
 	}
 
 	templateUUID := uuid.New()
-	template, err := templateRequestToTemplate(templateUUID, userUUID, request)
+	template, err := templateRequestToTemplate(templateUUID, userUUID, request, parameters)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Generate preview (also ensures template is valid)
+	defaultFilledTemplate := createDefaultFilledTemplate(template)
+	preview, err := c.generator.GeneratePreview(defaultFilledTemplate)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate preview from template: %w", err))
 		return
 	}
 
@@ -130,12 +126,14 @@ func validateCreateTemplateRequest(request CreateTemplateRequest) error {
 		return fmt.Errorf("template content must not be empty")
 	}
 
-	// TODO: pre-validate template parameters
+	if len(request.Parameters) == 0 {
+		return fmt.Errorf("template must have at least one parameter")
+	}
 
 	return nil
 }
 
-func templateRequestToTemplate(templateUUID uuid.UUID, userUUID uuid.UUID, request CreateTemplateRequest) (database.Template, error) {
+func templateRequestToTemplate(templateUUID uuid.UUID, userUUID uuid.UUID, request CreateTemplateRequest, parameters []dbparameter.Parameter) (database.Template, error) {
 	template := database.Template{
 		UUID:        templateUUID,
 		OwnerUUID:   userUUID,
@@ -143,203 +141,36 @@ func templateRequestToTemplate(templateUUID uuid.UUID, userUUID uuid.UUID, reque
 		Description: request.TemplateDescription,
 		Preview:     utils.GetPtr(templateUUID.String() + ".png"),
 		Template:    request.TemplateContent,
-		Parameters:  []dbparameter.Parameter{},
-	}
-
-	for _, parameter := range request.Parameters {
-		param, err := parseCreateTemplateParameter(parameter)
-		if err != nil {
-			return database.Template{}, fmt.Errorf("failed to parse parameter: %w", err)
-		}
-		template.Parameters = append(template.Parameters, param)
+		Parameters:  parameters,
 	}
 
 	return template, nil
 }
 
-func parseFloatParameter(parameter CreateTemplateRequestParameter) (dbparameter.FloatParameter, error) {
-	param := dbparameter.FloatParameter{
-		Name:        parameter.ParameterName,
-		DisplayName: parameter.ParameterDisplayName,
+func parseAndValidateCreateTemplateParameters(parameters []CreateTemplateRequestParameter) ([]dbparameter.Parameter, error) {
+	var dbParameters []dbparameter.Parameter
+
+	for _, parameter := range parameters {
+		param, err := parseAndValidateCreateTemplateParameter(parameter)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse parameter: %w", err)
+		}
+		dbParameters = append(dbParameters, param)
 	}
 
-	defaultValue, err := strconv.ParseFloat(parameter.ParameterDefaultValue, 64)
-	if err != nil {
-		return dbparameter.FloatParameter{}, fmt.Errorf("invalid default value: %w", err)
-	}
-	param.DefaultValue = defaultValue
-
-	idx := slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMinValue)
-	})
-	if idx == -1 {
-		return dbparameter.FloatParameter{}, errors.New("parameter must have a minimum value constraint")
-	}
-	minValue, err := strconv.ParseFloat(parameter.ParameterConstraints[idx].Value, 64)
-	if err != nil {
-		return dbparameter.FloatParameter{}, fmt.Errorf("invalid minimum value: %w", err)
-	}
-	if minValue > defaultValue {
-		return dbparameter.FloatParameter{}, errors.New("minimum value must not be greater than the default value")
-	}
-	param.MinValue = minValue
-
-	idx = slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMaxValue)
-	})
-	if idx == -1 {
-		return dbparameter.FloatParameter{}, errors.New("parameter must have a maximum value constraint")
-	}
-	maxValue, err := strconv.ParseFloat(parameter.ParameterConstraints[idx].Value, 64)
-	if err != nil {
-		return dbparameter.FloatParameter{}, fmt.Errorf("invalid maximum value for parameter: %w", err)
-	}
-	if maxValue < defaultValue {
-		return dbparameter.FloatParameter{}, errors.New("maximum value must not be less than the default value")
-	}
-	param.MaxValue = maxValue
-
-	if minValue >= maxValue {
-		return dbparameter.FloatParameter{}, errors.New("minimum value must be less than maximum value")
-	}
-
-	idx = slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintStep)
-	})
-	if idx == -1 {
-		return dbparameter.FloatParameter{}, errors.New("parameter must have a step constraint")
-	}
-	step, err := strconv.ParseFloat(parameter.ParameterConstraints[idx].Value, 64)
-	if err != nil {
-		return dbparameter.FloatParameter{}, fmt.Errorf("invalid step value for parameter: %w", err)
-	}
-	if step <= 0 {
-		return dbparameter.FloatParameter{}, errors.New("step value must be greater than 0")
-	}
-	param.Step = step
-
-	return param, nil
+	return dbParameters, nil
 }
 
-func parseIntParameter(parameter CreateTemplateRequestParameter) (dbparameter.IntParameter, error) {
-	param := dbparameter.IntParameter{
-		Name:        parameter.ParameterName,
-		DisplayName: parameter.ParameterDisplayName,
-	}
-
-	defaultValue, err := strconv.Atoi(parameter.ParameterDefaultValue)
-	if err != nil {
-		return dbparameter.IntParameter{}, fmt.Errorf("invalid default value: %w", err)
-	}
-	param.DefaultValue = defaultValue
-
-	idx := slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMinValue)
-	})
-	if idx == -1 {
-		return dbparameter.IntParameter{}, errors.New("parameter must have a minimum value constraint")
-	}
-	minValue, err := strconv.Atoi(parameter.ParameterConstraints[idx].Value)
-	if err != nil {
-		return dbparameter.IntParameter{}, fmt.Errorf("invalid minimum value: %w", err)
-	}
-	if minValue > defaultValue {
-		return dbparameter.IntParameter{}, errors.New("minimum value must not be greater than the default value")
-	}
-	param.MinValue = minValue
-
-	idx = slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMaxValue)
-	})
-	if idx == -1 {
-		return dbparameter.IntParameter{}, errors.New("parameter must have a maximum value constraint")
-	}
-	maxValue, err := strconv.Atoi(parameter.ParameterConstraints[idx].Value)
-	if err != nil {
-		return dbparameter.IntParameter{}, fmt.Errorf("invalid maximum value for parameter: %w", err)
-	}
-	if maxValue < defaultValue {
-		return dbparameter.IntParameter{}, errors.New("maximum value must not be less than the default value")
-	}
-	param.MaxValue = maxValue
-
-	if minValue >= maxValue {
-		return dbparameter.IntParameter{}, errors.New("minimum value must be less than maximum value")
-	}
-
-	return param, nil
-}
-
-func parseStringParameter(parameter CreateTemplateRequestParameter) (dbparameter.StringParameter, error) {
-	param := dbparameter.StringParameter{
-		Name:        parameter.ParameterName,
-		DisplayName: parameter.ParameterDisplayName,
-	}
-
-	param.DefaultValue = parameter.ParameterDefaultValue
-
-	idx := slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMinLength)
-	})
-	if idx == -1 {
-		return dbparameter.StringParameter{}, errors.New("parameter must have a minimum length constraint")
-	}
-	minLength, err := strconv.Atoi(parameter.ParameterConstraints[idx].Value)
-	if err != nil {
-		return dbparameter.StringParameter{}, fmt.Errorf("invalid minimum length: %w", err)
-	}
-	if minLength > len(param.DefaultValue) {
-		return dbparameter.StringParameter{}, errors.New("minimum length must not be greater than the default value length")
-	}
-	param.MinLength = minLength
-
-	idx = slices.IndexFunc(parameter.ParameterConstraints, func(c CreateTemplateRequestParameterConstraint) bool {
-		return c.Type == string(dbparameter.ParameterConstraintMaxLength)
-	})
-	if idx == -1 {
-		return dbparameter.StringParameter{}, errors.New("parameter must have a maximum length constraint")
-	}
-	maxLength, err := strconv.Atoi(parameter.ParameterConstraints[idx].Value)
-	if err != nil {
-		return dbparameter.StringParameter{}, fmt.Errorf("invalid maximum length for parameter: %w", err)
-	}
-	if maxLength < len(param.DefaultValue) {
-		return dbparameter.StringParameter{}, errors.New("maximum length must not be less than the default value length")
-	}
-	param.MaxLength = maxLength
-
-	if minLength >= maxLength {
-		return dbparameter.StringParameter{}, errors.New("minimum length must be less than maximum length")
-	}
-
-	return param, nil
-}
-
-func parseBoolParameter(parameter CreateTemplateRequestParameter) (dbparameter.BoolParameter, error) {
-	param := dbparameter.BoolParameter{
-		Name:        parameter.ParameterName,
-		DisplayName: parameter.ParameterDisplayName,
-	}
-
-	var err error
-	param.DefaultValue, err = strconv.ParseBool(parameter.ParameterDefaultValue)
-	if err != nil {
-		return dbparameter.BoolParameter{}, fmt.Errorf("invalid default value: %w", err)
-	}
-
-	return param, nil
-}
-
-func templateRequestToDefaultFilledTemplate(request CreateTemplateRequest) generator.FilledTemplate {
+func createDefaultFilledTemplate(template database.Template) generator.FilledTemplate {
 	filledTemplate := generator.FilledTemplate{
 		UUID:     uuid.Nil,
-		Template: []byte(request.TemplateContent),
+		Template: []byte(template.Template),
 	}
 
-	for _, parameter := range request.Parameters {
+	for _, parameter := range template.Parameters {
 		filledTemplate.Params = append(filledTemplate.Params, generator.Parameter{
-			Key:   parameter.ParameterName,
-			Value: parameter.ParameterDefaultValue,
+			Key:   parameter.GetName(),
+			Value: parameter.String(),
 		})
 	}
 

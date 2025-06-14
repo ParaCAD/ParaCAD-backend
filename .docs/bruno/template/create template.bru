@@ -11,9 +11,75 @@ post {
 }
 
 headers {
-  Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJQYXJhQ0FEIiwiZXhwIjoyMzU2NjE4NDI1LCJpYXQiOjE3MjU4OTg0MjUsImlzcyI6IlBhcmFDQUQiLCJyb2xlIjoidXNlciIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCJ9.Gr1MxCR00YHcpGr8O7taHFqoMGPkTv1FrY870hKsYuU
+  Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJQYXJhQ0FEIiwiZXhwIjoxNzQ5OTAxMDQ4LCJpYXQiOjE3NDk5MDAxNDgsImlzcyI6IlBhcmFDQUQiLCJsb2dpbiI6InRlc3QiLCJyb2xlIjoidXNlciIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMSJ9.6BvsfEfDt8DwtJv1wQvsClKIqRa_ZTEcYL_qsfsM6fY
 }
 
 body:json {
-  {}
+  {
+    "template_name": "Measuring cup",
+    "template_description": "A cup / scoop for measuring exact amounts of liquids and powders.",
+    "template_content": "$fa=2;\n$fs=0.2;\n$fn=1000;\n\nvolume_mm3=volume*10*10*10;\n\nvoid_radius=void_diameter/2;\nvoid_height=(4*volume_mm3)/(3.1415*void_diameter*void_diameter);\n\ndifference() {\n    cylinder(void_height,\n        void_radius+wall_thickness,\n        void_radius+wall_thickness);\n    translate([0,0,wall_thickness]){\n        cylinder(void_height*1.5,void_radius,void_radius);\n    };\n}\n",
+    "template_parameters": [
+      {
+        "parameter_name": "volume",
+        "parameter_display_name": "Volume (cm3)",
+        "parameter_type": "float",
+        "parameter_default_value": "4",
+        "parameter_constraints": [
+          {
+            "type": "min_value",
+            "value": "2"
+          },
+          {
+            "type": "max_value",
+            "value": "80"
+          },
+          {
+            "type": "step",
+            "value": "0.1"
+          }
+        ]
+      },
+      {
+        "parameter_name": "wall_thickness",
+        "parameter_display_name": "Wall thickness (mm)",
+        "parameter_type": "float",
+        "parameter_default_value": "1.2",
+        "parameter_constraints": [
+          {
+            "type": "min_value",
+            "value": "0.8"
+          },
+          {
+            "type": "max_value",
+            "value": "5"
+          },
+          {
+            "type": "step",
+            "value": "0.2"
+          }
+        ]
+      },
+      {
+        "parameter_name": "void_diameter",
+        "parameter_display_name": "Inner diameter (mm)",
+        "parameter_type": "float",
+        "parameter_default_value": "20",
+        "parameter_constraints": [
+          {
+            "type": "min_value",
+            "value": "10"
+          },
+          {
+            "type": "max_value",
+            "value": "80"
+          },
+          {
+            "type": "step",
+            "value": "0.5"
+          }
+        ]
+      }
+    ]
+  }
 }
