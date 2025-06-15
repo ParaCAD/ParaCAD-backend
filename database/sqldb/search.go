@@ -14,7 +14,7 @@ func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]
 	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name
 	FROM templates t
 		JOIN users u ON t.owner_uuid = u.uuid
-	WHERE 1=1 AND 
+	WHERE t.deleted IS NULL AND 
 		(
 			$1 = '' -- empty search query - return all
 			OR 
@@ -56,7 +56,7 @@ func (db *SQLDB) GetTemplatesByOwnerUUID(ownerUUID uuid.UUID, pageNumber int, pa
 	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name
 	FROM templates t
 		JOIN users u ON t.owner_uuid = u.uuid
-	WHERE t.owner_uuid = $1
+	WHERE t.deleted IS NULL AND t.owner_uuid = $1
 	ORDER BY t.created DESC
 	LIMIT $2 OFFSET $3;
 	`
