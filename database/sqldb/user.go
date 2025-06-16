@@ -13,7 +13,7 @@ func (db *SQLDB) GetUserByUUID(uuid uuid.UUID) (*database.User, error) {
 	var user database.User
 	query := `
 	SELECT uuid, username, email, password, role, deleted, created, last_login
-		FROM users WHERE uuid = $1
+		FROM users WHERE uuid = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&user, query, uuid)
 	if err != nil {
@@ -29,7 +29,7 @@ func (db *SQLDB) GetUserByUsername(username string) (*database.User, error) {
 	var user database.User
 	query := `
 	SELECT uuid, username, email, password, role, deleted, created, last_login
-		FROM users WHERE username = $1
+		FROM users WHERE username = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&user, query, username)
 	if err != nil {
@@ -41,9 +41,21 @@ func (db *SQLDB) GetUserByUsername(username string) (*database.User, error) {
 	return &user, nil
 }
 
+func (db *SQLDB) GetUserTemplateCount(uuid uuid.UUID) (int, error) {
+	query := `
+	SELECT COUNT(*) FROM templates WHERE owner_uuid = $1
+	`
+	var count int
+	err := db.db.Get(&count, query, uuid)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (db *SQLDB) IsUsernameOrEmailUsed(username, email string) (bool, error) {
 	query := `
-	SELECT COUNT(*) FROM users WHERE username = $1 OR email = $2
+	SELECT COUNT(*) FROM users WHERE username = $1 OR email = $2 
 	`
 	var count int
 	err := db.db.Get(&count, query, username, email)

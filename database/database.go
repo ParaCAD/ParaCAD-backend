@@ -12,6 +12,7 @@ type Database interface {
 	GetUserByUUID(uuid.UUID) (*User, error)
 	GetUserByUsername(string) (*User, error)
 	IsUsernameOrEmailUsed(string, string) (bool, error)
+	GetUserTemplateCount(uuid.UUID) (int, error)
 	CreateUser(User) error
 	DeleteUser(uuid.UUID) error
 

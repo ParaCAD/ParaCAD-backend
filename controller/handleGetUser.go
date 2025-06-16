@@ -11,8 +11,10 @@ import (
 )
 
 type GetUserResponse struct {
-	UserUUID string `json:"user_uuid"`
-	UserName string `json:"user_name"`
+	UserUUID      string  `json:"user_uuid"`
+	UserName      string  `json:"user_name"`
+	TemplateCount int     `json:"template_count"`
+	LastLoginTime *string `json:"last_login_time"`
 
 	Templates []TemplatePreview `json:"templates"`
 }
@@ -35,6 +37,12 @@ func (c *Controller) HandleGetUser(w http.ResponseWriter, r *http.Request, p htt
 		return
 	}
 
+	templateCount, err := c.db.GetUserTemplateCount(user.UUID)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusFailedDependency, err)
+		return
+	}
+
 	templates, err := c.db.GetTemplatesByOwnerUUID(user.UUID, 1, 100) // TODO: pagination
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusFailedDependency, err)
@@ -42,9 +50,14 @@ func (c *Controller) HandleGetUser(w http.ResponseWriter, r *http.Request, p htt
 	}
 
 	response := GetUserResponse{
-		UserUUID:  user.UUID.String(),
-		UserName:  user.Username,
-		Templates: []TemplatePreview{},
+		UserUUID:      user.UUID.String(),
+		UserName:      user.Username,
+		TemplateCount: templateCount,
+		Templates:     []TemplatePreview{},
+	}
+
+	if user.LastLogin != nil {
+		response.LastLoginTime = utils.GetPtr(user.LastLogin.Format("2006-01-02 15:04"))
 	}
 
 	for _, template := range templates {
