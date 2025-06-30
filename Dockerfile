@@ -6,8 +6,9 @@ RUN apk add --no-cache git
 RUN go mod download
 RUN go build -o /app/paracad .
 
-FROM alpine:3.21
-RUN apk add --no-cache openscad
+# FROM alpine:3.21
+# RUN apk add --no-cache openscad
+FROM openscad/openscad:egl
 COPY --from=build /app/paracad /app/paracad
 COPY images /app/images
 COPY not-found.png /app/images

@@ -32,14 +32,23 @@ func createExampleUsersAndTemplates(c *controller.Controller) {
 	w = httptest.NewRecorder()
 	r = createCubeRequest(userID.UUID.String())
 	c.HandleCreateTemplate(w, &r, nil)
+	if w.Code >= 400 {
+		panic(fmt.Sprintf("Expected status code 200, got %d: %s", w.Code, w.Body.String()))
+	}
 
 	w = httptest.NewRecorder()
 	r = createMeasuringCupRequest(userID.UUID.String())
 	c.HandleCreateTemplate(w, &r, nil)
+	if w.Code >= 400 {
+		panic(fmt.Sprintf("Expected status code 200, got %d: %s", w.Code, w.Body.String()))
+	}
 
 	w = httptest.NewRecorder()
 	r = createBoxWithLidRequest(userID.UUID.String())
 	c.HandleCreateTemplate(w, &r, nil)
+	if w.Code >= 400 {
+		panic(fmt.Sprintf("Expected status code 200, got %d: %s", w.Code, w.Body.String()))
+	}
 }
 
 func createUserRequest(username string, email string, password string) http.Request {
