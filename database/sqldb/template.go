@@ -36,7 +36,7 @@ func (db *SQLDB) GetTemplateWithOwnerByUUID(templateUUID uuid.UUID) (*database.T
 	var template database.TemplatePage
 	query := `
 	SELECT t.uuid, t.name, t.description, t.preview,
-	 	t.owner_uuid, u.username AS owner_name
+	 	t.owner_uuid, u.username AS owner_name, u.deleted AS owner_deleted
 	FROM templates t	
 		JOIN users u ON t.owner_uuid = u.uuid
 	WHERE t.uuid = $1 AND t.deleted IS NULL

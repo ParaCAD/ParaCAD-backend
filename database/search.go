@@ -18,12 +18,13 @@ const (
 )
 
 type SearchResult struct {
-	UUID      string    `db:"uuid"`
-	Name      string    `db:"name"`
-	Preview   *string   `db:"preview"`
-	Created   time.Time `db:"created"`
-	OwnerUUID string    `db:"owner_uuid"`
-	OwnerName string    `db:"owner_name"`
+	UUID         string     `db:"uuid"`
+	Name         string     `db:"name"`
+	Preview      *string    `db:"preview"`
+	Created      time.Time  `db:"created"`
+	OwnerUUID    *string    `db:"owner_uuid"`
+	OwnerName    *string    `db:"owner_name"`
+	OwnerDeleted *time.Time `db:"owner_deleted"`
 }
 
 func ToSorting(s string) Sorting {

@@ -35,8 +35,6 @@ func (a *API) addRoutes() *API {
 
 	// USER
 	a.router.Handle(http.MethodGet, "/user/:UUID", a.middlewareOpen(a.controller.HandleGetUser))
-
-	a.router.Handle(http.MethodPost, "/user/:UUID", a.middlewareAuth(a.controller.HandleEditUser))
 	a.router.Handle(http.MethodDelete, "/user/:UUID", a.middlewareAuth(a.controller.HandleDeleteUser))
 
 	// AUTH

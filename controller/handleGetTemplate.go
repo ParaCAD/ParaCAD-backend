@@ -18,8 +18,8 @@ type GetTemplateResponse struct {
 	TemplatePreview     string                         `json:"template_preview"`
 	Parameters          []GetTemplateResponseParameter `json:"template_parameters"`
 
-	OwnerUUID uuid.UUID `json:"owner_uuid"`
-	OwnerName string    `json:"owner_name"`
+	OwnerUUID *uuid.UUID `json:"owner_uuid"`
+	OwnerName *string    `json:"owner_name"`
 }
 
 type GetTemplateResponseParameter struct {
@@ -58,9 +58,11 @@ func (c *Controller) HandleGetTemplate(w http.ResponseWriter, r *http.Request, p
 		TemplateDescription: template.Description,
 		TemplatePreview:     utils.ValueOrDefault(template.PreviewURL, "not-found.png"),
 		Parameters:          []GetTemplateResponseParameter{},
+	}
 
-		OwnerUUID: template.OwnerUUID,
-		OwnerName: template.OwnerName,
+	if template.OwnerDeleted == nil {
+		response.OwnerUUID = &template.OwnerUUID
+		response.OwnerName = &template.OwnerName
 	}
 
 	for _, parameter := range template.Parameters {
