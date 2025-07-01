@@ -13,7 +13,6 @@ import (
 type GetUserResponse struct {
 	UserUUID      string  `json:"user_uuid"`
 	UserName      string  `json:"user_name"`
-	Description   string  `json:"description"`
 	TemplateCount int     `json:"template_count"`
 	LastLoginTime *string `json:"last_login_time"`
 
@@ -53,7 +52,6 @@ func (c *Controller) HandleGetUser(w http.ResponseWriter, r *http.Request, p htt
 	response := GetUserResponse{
 		UserUUID:      user.UUID.String(),
 		UserName:      user.Username,
-		Description:   user.Description,
 		TemplateCount: templateCount,
 		Templates:     []TemplatePreview{},
 	}

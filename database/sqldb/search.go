@@ -11,7 +11,7 @@ func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]
 	results := []database.SearchResult{}
 	// TODO: handle templates with deleted owners
 	query := `
-	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name
+	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name, u.deleted AS owner_deleted
 	FROM templates t
 		JOIN users u ON t.owner_uuid = u.uuid
 	WHERE t.deleted IS NULL AND 

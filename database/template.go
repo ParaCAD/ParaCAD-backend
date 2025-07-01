@@ -1,6 +1,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
 	"github.com/google/uuid"
 )
@@ -14,8 +16,9 @@ type TemplatePage struct {
 	PreviewURL  *string   `db:"preview"`
 	Parameters  []dbparameter.Parameter
 
-	OwnerUUID uuid.UUID `db:"owner_uuid"`
-	OwnerName string    `db:"owner_name"`
+	OwnerUUID    uuid.UUID  `db:"owner_uuid"`
+	OwnerName    string     `db:"owner_name"`
+	OwnerDeleted *time.Time `db:"owner_deleted"`
 }
 
 type TemplateContent struct {

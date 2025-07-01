@@ -12,7 +12,7 @@ import (
 func (db *SQLDB) GetUserByUUID(uuid uuid.UUID) (*database.User, error) {
 	var user database.User
 	query := `
-	SELECT uuid, username, email, password, description, role, deleted, created, last_login
+	SELECT uuid, username, email, password, role, deleted, created, last_login
 		FROM users WHERE uuid = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&user, query, uuid)
@@ -28,7 +28,7 @@ func (db *SQLDB) GetUserByUUID(uuid uuid.UUID) (*database.User, error) {
 func (db *SQLDB) GetUserByUsername(username string) (*database.User, error) {
 	var user database.User
 	query := `
-	SELECT uuid, username, email, password, description, role, deleted, created, last_login
+	SELECT uuid, username, email, password, role, deleted, created, last_login
 		FROM users WHERE username = $1 AND deleted IS NULL
 	`
 	err := db.db.Get(&user, query, username)
@@ -70,10 +70,10 @@ func (db *SQLDB) IsUsernameOrEmailUsed(username, email string) (bool, error) {
 
 func (db *SQLDB) CreateUser(user database.User) error {
 	query := `
-	INSERT INTO users (uuid, username, email, password, description, role, created)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	INSERT INTO users (uuid, username, email, password, role, created)
+		VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	_, err := db.db.Exec(query, user.UUID, user.Username, user.Email, user.Password, user.Description, user.Role, user.Created)
+	_, err := db.db.Exec(query, user.UUID, user.Username, user.Email, user.Password, user.Role, user.Created)
 	if err != nil {
 		return err
 	}

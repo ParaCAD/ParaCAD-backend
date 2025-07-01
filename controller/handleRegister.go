@@ -62,15 +62,14 @@ func (c *Controller) HandleRegister(w http.ResponseWriter, r *http.Request, _ ht
 	}
 
 	user := database.User{
-		UUID:        uuid.New(),
-		Username:    request.Username,
-		Email:       request.Email,
-		Password:    passwordHash,
-		Description: "New user",
-		Role:        database.RoleUser,
-		Deleted:     nil,
-		Created:     time.Now(),
-		LastLogin:   nil,
+		UUID:      uuid.New(),
+		Username:  request.Username,
+		Email:     request.Email,
+		Password:  passwordHash,
+		Role:      database.RoleUser,
+		Deleted:   nil,
+		Created:   time.Now(),
+		LastLogin: nil,
 	}
 
 	err = c.db.CreateUser(user)

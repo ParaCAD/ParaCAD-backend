@@ -24,12 +24,12 @@ type SearchResponse struct {
 }
 
 type TemplatePreview struct {
-	UUID      string `json:"uuid"`
-	Name      string `json:"name"`
-	Preview   string `json:"preview"`
-	Created   string `json:"created"`
-	OwnerUUID string `json:"owner_uuid"`
-	OwnerName string `json:"owner_name"`
+	UUID      string  `json:"uuid"`
+	Name      string  `json:"name"`
+	Preview   string  `json:"preview"`
+	Created   string  `json:"created"`
+	OwnerUUID *string `json:"owner_uuid"`
+	OwnerName *string `json:"owner_name"`
 }
 
 const maxPageSize = 25
@@ -91,12 +91,15 @@ func (r *SearchRequest) Validate() error {
 }
 
 func searchResponseToTemplatePreview(result database.SearchResult) TemplatePreview {
-	return TemplatePreview{
-		UUID:      result.UUID,
-		Name:      result.Name,
-		Preview:   utils.ValueOrDefault(result.Preview, "not-found.png"),
-		Created:   result.Created.Format("2006-01-02 15:04"),
-		OwnerUUID: result.OwnerUUID,
-		OwnerName: result.OwnerName,
+	template := TemplatePreview{
+		UUID:    result.UUID,
+		Name:    result.Name,
+		Preview: utils.ValueOrDefault(result.Preview, "not-found.png"),
+		Created: result.Created.Format("2006-01-02 15:04"),
 	}
+	if result.OwnerDeleted == nil {
+		template.OwnerUUID = result.OwnerUUID
+		template.OwnerName = result.OwnerName
+	}
+	return template
 }
