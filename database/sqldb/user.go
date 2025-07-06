@@ -43,7 +43,7 @@ func (db *SQLDB) GetUserByUsername(username string) (*database.User, error) {
 
 func (db *SQLDB) GetUserTemplateCount(uuid uuid.UUID) (int, error) {
 	query := `
-	SELECT COUNT(*) FROM templates WHERE owner_uuid = $1
+	SELECT COUNT(*) FROM templates WHERE owner_uuid = $1 AND deleted IS NULL
 	`
 	var count int
 	err := db.db.Get(&count, query, uuid)

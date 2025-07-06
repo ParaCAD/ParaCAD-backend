@@ -9,7 +9,6 @@ import (
 
 func (db *SQLDB) SearchTemplates(searchParameters database.SearchParameters) ([]database.SearchResult, error) {
 	results := []database.SearchResult{}
-	// TODO: handle templates with deleted owners
 	query := `
 	SELECT t.uuid, t.name, t.preview, t.created, t.owner_uuid, u.username AS owner_name, u.deleted AS owner_deleted
 	FROM templates t

@@ -43,7 +43,7 @@ func (c *Controller) HandleGetUser(w http.ResponseWriter, r *http.Request, p htt
 		return
 	}
 
-	templates, err := c.db.GetTemplatesByOwnerUUID(user.UUID, 1, 100) // TODO: pagination
+	templates, err := c.db.GetTemplatesByOwnerUUID(user.UUID, 1, 100)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusFailedDependency, err)
 		return

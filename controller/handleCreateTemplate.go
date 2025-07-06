@@ -22,11 +22,10 @@ const (
 )
 
 type CreateTemplateRequest struct {
-	TemplateName        string `json:"template_name"`
-	TemplateDescription string `json:"template_description"`
-	TemplateContent     string `json:"template_content"`
-	// TemplatePreview     string                           `json:"template_preview"` TODO
-	Parameters []CreateTemplateRequestParameter `json:"template_parameters"`
+	TemplateName        string                           `json:"template_name"`
+	TemplateDescription string                           `json:"template_description"`
+	TemplateContent     string                           `json:"template_content"`
+	Parameters          []CreateTemplateRequestParameter `json:"template_parameters"`
 }
 
 type CreateTemplateRequestParameter struct {

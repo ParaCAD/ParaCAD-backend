@@ -34,8 +34,6 @@ type TemplateMeta struct {
 	OwnerUUID uuid.UUID `db:"owner_uuid"`
 }
 
-// TODO: remove
-
 type Template struct {
 	UUID        uuid.UUID `db:"uuid"`
 	OwnerUUID   uuid.UUID `db:"owner_uuid"`

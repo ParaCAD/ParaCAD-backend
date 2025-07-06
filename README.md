@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml/badge.svg?branch=master&event=push)](https://github.com/ParaCAD/ParaCAD-backend/actions/workflows/tests.yml)
 
-TODO: logo goes here
+![ParaCAD Logo](logo.svg)
 
 My engineering thesis
 
