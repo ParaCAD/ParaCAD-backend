@@ -49,6 +49,13 @@ func createExampleUsersAndTemplates(c *controller.Controller) {
 	if w.Code >= 400 {
 		panic(fmt.Sprintf("Expected status code 200, got %d: %s", w.Code, w.Body.String()))
 	}
+
+	w = httptest.NewRecorder()
+	r = createTestTubeHolderRequest(userID.UUID.String())
+	c.HandleCreateTemplate(w, &r, nil)
+	if w.Code >= 400 {
+		panic(fmt.Sprintf("Expected status code 200, got %d: %s", w.Code, w.Body.String()))
+	}
 }
 
 func createUserRequest(username string, email string, password string) http.Request {
@@ -314,6 +321,113 @@ func createBoxWithLidRequest(userID string) http.Request {
 				"parameter_type": "bool",
 				"parameter_default_value": "false",
 				"parameter_constraints": []
+			}
+		]
+	}
+	`)))
+
+	r := http.Request{
+		Method: http.MethodPost,
+		Body:   body,
+	}
+	r = *r.WithContext(ctx)
+
+	return r
+}
+
+func createTestTubeHolderRequest(userID string) http.Request {
+	ctx := context.WithValue(context.Background(), auth.UserIDKey, userID)
+	ctx = context.WithValue(ctx, auth.RoleKey, auth.RoleUser)
+
+	body := io.NopCloser(bytes.NewReader([]byte(`
+	{
+		"template_name": "Test tube holder",
+		"template_description": "A holder for test tubes. Useful for lab work where you need to hold multiple test tubes at once.",
+		"template_content": "$fa = 5;\n$fs = 0.05;\n\nsingle_cube_size=test_tube_diameter+wall_thickness*2;\ncube_width=single_cube_size*width;\ncube_length=single_cube_size*length;\nhole_height=height-wall_thickness;\ntest_tube_radius=test_tube_diameter/2;\n\ndifference(){\n    cube([cube_width,cube_length,height]);\n    for(x = [1 : length])\n    {\n        for(y = [1 : width])\n        {\n            translate([single_cube_size/2+(y-1)*single_cube_size,\n                single_cube_size/2+(x-1)*single_cube_size,wall_thickness+0.5])\n                cylinder(hole_height,test_tube_radius,test_tube_radius);\n        };\n    };\n}",
+		"template_parameters": [
+			{
+				"parameter_name": "test_tube_diameter",
+				"parameter_display_name": "Tube diameter (mm)",
+				"parameter_type": "int",
+				"parameter_default_value": "15",
+				"parameter_constraints": [
+					{
+						"type": "min_value",
+						"value": "8"
+					},
+					{
+						"type": "max_value",
+						"value": "30"
+					}
+				]
+			},
+			{
+				"parameter_name": "wall_thickness",
+				"parameter_display_name": "Wall thickness (mm)",
+				"parameter_type": "float",
+				"parameter_default_value": "1",
+				"parameter_constraints": [
+					{
+						"type": "min_value",
+						"value": "0.2"
+					},
+					{
+						"type": "max_value",
+						"value": "5"
+					},
+					{
+						"type": "step",
+						"value": "0.2"
+					}
+				]
+			},
+			{
+				"parameter_name": "height",
+				"parameter_display_name": "Height (mm)",
+				"parameter_type": "int",
+				"parameter_default_value": "20",
+				"parameter_constraints": [
+					{
+						"type": "min_value",
+						"value": "15"
+					},
+					{
+						"type": "max_value",
+						"value": "30"
+					}
+				]
+			},
+			{
+				"parameter_name": "width",
+				"parameter_display_name": "Width (tubes)",
+				"parameter_type": "int",
+				"parameter_default_value": "5",
+				"parameter_constraints": [
+					{
+						"type": "min_value",
+						"value": "2"
+					},
+					{
+						"type": "max_value",
+						"value": "30"
+					}
+				]
+			},
+			{
+				"parameter_name": "length",
+				"parameter_display_name": "Length (tubes)",
+				"parameter_type": "int",
+				"parameter_default_value": "2",
+				"parameter_constraints": [
+					{
+						"type": "min_value",
+						"value": "2"
+					},
+					{
+						"type": "max_value",
+						"value": "30"
+					}
+				]
 			}
 		]
 	}
