@@ -60,15 +60,15 @@ func (c *Controller) HandleCreateTemplate(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	userUUID, _, err := auth.GetUserIDAndRoleFromRequest(r)
-	if err != nil {
-		utils.HandleErr(r, w, http.StatusInternalServerError, fmt.Errorf("failed to get user ID from request: %w", err))
-		return
-	}
-
 	parameters, err := parseAndValidateCreateTemplateParameters(request.Parameters)
 	if err != nil {
 		utils.HandleErr(r, w, http.StatusBadRequest, fmt.Errorf("failed to parse template parameters: %w", err))
+		return
+	}
+
+	userUUID, _, err := auth.GetUserIDAndRoleFromRequest(r)
+	if err != nil {
+		utils.HandleErr(r, w, http.StatusInternalServerError, fmt.Errorf("failed to get user ID from request: %w", err))
 		return
 	}
 
