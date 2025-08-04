@@ -63,10 +63,7 @@ func (g OpenSCADGenerator) GenerateModel(template generator.FilledTemplate) ([]b
 	outputFilePath := path.Join(tempDirName, outputFileName)
 
 	// Generate model
-	cmdArgs := []string{}
-	cmdArgs = append(cmdArgs, "--export-format=binstl")
-	cmdArgs = append(cmdArgs, "-o"+outputFilePath)
-	cmdArgs = append(cmdArgs, scadFilePath)
+	cmdArgs := buildArgs(FormatSTL, outputFilePath, scadFilePath)
 
 	cmd := exec.Command("openscad", cmdArgs...)
 	output, err := cmd.CombinedOutput()

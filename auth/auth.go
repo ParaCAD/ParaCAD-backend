@@ -7,9 +7,9 @@ type Auth struct {
 	Duration  time.Duration
 }
 
-func New(secret string, durationMinutes int) *Auth {
+func New(secret string, duration time.Duration) *Auth {
 	return &Auth{
 		JWTSecret: []byte(secret),
-		Duration:  time.Duration(durationMinutes) * time.Minute,
+		Duration:  duration,
 	}
 }

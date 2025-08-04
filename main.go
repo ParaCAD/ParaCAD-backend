@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"log/slog"
+	"time"
 
 	"github.com/ParaCAD/ParaCAD-backend/api"
 	"github.com/ParaCAD/ParaCAD-backend/auth"
@@ -20,7 +21,7 @@ func main() {
 
 	logging.Init(slog.LevelDebug)
 
-	auth := auth.New(cfg.JWTSecret, 15)
+	auth := auth.New(cfg.JWTSecret, 15*time.Minute)
 
 	sqlDB, err := sqldb.New(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 	if err != nil {

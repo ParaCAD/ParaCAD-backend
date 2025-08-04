@@ -58,11 +58,7 @@ func (g OpenSCADGenerator) GeneratePreview(template generator.FilledTemplate) ([
 	outputFilePath := path.Join(tempDirName, outputFileName)
 
 	// Generate model
-	cmdArgs := []string{}
-	cmdArgs = append(cmdArgs, "--export-format=png")
-	cmdArgs = append(cmdArgs, "--colorscheme=BeforeDawn")
-	cmdArgs = append(cmdArgs, "-o"+outputFilePath)
-	cmdArgs = append(cmdArgs, scadFilePath)
+	cmdArgs := buildArgs(FormatPNG, outputFilePath, scadFilePath)
 
 	cmd := exec.Command("openscad", cmdArgs...)
 	output, err := cmd.CombinedOutput()
