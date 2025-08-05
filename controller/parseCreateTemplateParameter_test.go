@@ -407,3 +407,58 @@ func Test_parseStringParameter(t *testing.T) {
 		})
 	}
 }
+
+func Test_parseBoolParameter(t *testing.T) {
+	type args struct {
+		parameter CreateTemplateRequestParameter
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    dbparameter.BoolParameter
+		wantErr bool
+	}{
+		{
+			name: "Valid bool parameter",
+			args: args{
+				parameter: CreateTemplateRequestParameter{
+					ParameterName:         "test_bool",
+					ParameterDisplayName:  "Test Bool",
+					ParameterType:         string(dbparameter.ParameterTypeBool),
+					ParameterDefaultValue: "true",
+				},
+			},
+			want: dbparameter.BoolParameter{
+				Name:         "test_bool",
+				DisplayName:  "Test Bool",
+				DefaultValue: true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Invalid bool parameter (bad default value)",
+			args: args{
+				parameter: CreateTemplateRequestParameter{
+					ParameterName:         "test_bool",
+					ParameterDisplayName:  "Test Bool",
+					ParameterType:         string(dbparameter.ParameterTypeBool),
+					ParameterDefaultValue: "Moim zdaniem to nie ma tak, że dobrze albo że nie dobrze.",
+				},
+			},
+			want:    dbparameter.BoolParameter{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseBoolParameter(tt.args.parameter)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("parseBoolParameter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("parseBoolParameter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
