@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/ParaCAD/ParaCAD-backend/database/dbparameter"
 	"github.com/ParaCAD/ParaCAD-backend/generator"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
+	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
@@ -83,7 +85,8 @@ func (c *Controller) HandleCreateTemplate(w http.ResponseWriter, r *http.Request
 	defaultFilledTemplate := createDefaultFilledTemplate(template)
 	preview, err := c.generator.GeneratePreview(defaultFilledTemplate)
 	if err != nil {
-		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate preview from template: %w", err))
+		logging.AddErrorToRequestCtx(r, err, http.StatusConflict)
+		utils.HandleErr(r, w, http.StatusConflict, fmt.Errorf("failed to generate preview from template: %w", errors.New("generation failed, please check your template code and parameters")))
 		return
 	}
 

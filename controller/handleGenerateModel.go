@@ -2,12 +2,14 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"slices"
 
 	"github.com/ParaCAD/ParaCAD-backend/generator"
 	"github.com/ParaCAD/ParaCAD-backend/utils"
+	"github.com/ParaCAD/ParaCAD-backend/utils/logging"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
@@ -70,7 +72,8 @@ func (c *Controller) HandleGenerateModel(w http.ResponseWriter, r *http.Request,
 
 	generatedModel, err := c.generator.GenerateModel(generatorTemplate)
 	if err != nil {
-		utils.HandleErr(r, w, http.StatusInternalServerError, err)
+		logging.AddErrorToRequestCtx(r, err, http.StatusInternalServerError)
+		utils.HandleErr(r, w, http.StatusInternalServerError, fmt.Errorf("failed to generate preview from template: %w", errors.New("generation failed, please check your template code and parameters")))
 		return
 	}
 
